@@ -2,9 +2,7 @@
 Equipo 12 InnovaTECH del ciclo4A
 
 # PRESENTACION DE LOS INTEGRANTES
-<<<<<<< HEAD
 
-=======
 Jessica Paola Garrido Galindo,Ingeniera de software, con muchas ganas de fortalecer mis conocimientos en este ciclo 4A.
 
 Diego Agudelo, docente de matemáticas, amante de la programación, llegar a la meta es el objetivo.
@@ -15,4 +13,3 @@ Gustavo Enrique Ramirez Aguilar: Tengo 30 años de edad, padre de una niña de 4
 
 Oscar Ivan Mimalchi, tengo un gran interes por temas de tecnologia en especial por la programación de software. Estoy orgulloso de pertenecer a Mision Tic.
 
->>>>>>> ef7c9cbb9601758b183eded49f2df17c8d7b472b
