@@ -1,0 +1,26 @@
+{
+  "name": "back_innovatech",
+  "version": "1.0.0",
+  "description": "Equipo 12 InnovaTECH del ciclo4A",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JpGarrido2/back_innovatech.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JpGarrido2/back_innovatech/issues"
+  },
+  "homepage": "https://github.com/JpGarrido2/back_innovatech#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^6.0.12",
+    "morgan": "^1.10.0"
+  }
+}
