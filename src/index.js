@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const morgan = require("morgan");
 const { mongoose } = require("./database");
+const cors = require("cors");
 // crear el servidor
 const app = express();
 
@@ -12,6 +13,7 @@ app.set("port", process.env.PORT || 4000);
 
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(cors({ origin: "*" }));
 
 const login = require(path.join(__dirname, "/routes/login.routes.js"));
 
