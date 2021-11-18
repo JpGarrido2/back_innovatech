@@ -4,7 +4,9 @@ const Login = require("../model/login");
 
 router.get("/", async (req, res) => {
   try {
-    const login = await Login.find();
+    const login = await Login.find({ }, (err, docs) => {
+      console.log(docs);
+    });
     console.log(login);
     res.json(login);
   } catch (error) {

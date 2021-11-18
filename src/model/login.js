@@ -9,4 +9,4 @@ const LoginSchema = new Schema({
   tipo_usuario: { type: Number, required: true },
   estado: { type: Number, required: true },
 });
-module.exports = mongoose.model("Login", LoginSchema, "login");
+module.exports = mongoose.model("", LoginSchema, "login");
