@@ -14,6 +14,40 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/:id", async (req, res) => {
+  try {
+    const usuario = await Login.findById(req.params.id);
+    console.log(usuario);
+    res.json(usuario);
+  } catch (err) {
+    console.log(err);
+    res.status(201).json({
+      status: "No encontrado.",
+    });
+  }
+});
+
+router.get("/identificacion/:identificacion", async (req, res, next) => {
+  try {
+    const usuario = await Login.find()
+      .where("identificacion")
+      .equals(req.params.identificacion);
+    console.log(usuario);
+    if (usuario.length > 0) {
+      res.json(usuario);
+    } else {
+      res.status(201).json({
+        status: "No encontrado.",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(201).json({
+      status: "Error",
+    });
+  }
+});
+
 router.post("/", async (req, res) => {
   try {
     const {
