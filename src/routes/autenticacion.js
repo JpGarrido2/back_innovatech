@@ -1,7 +1,10 @@
-const JWT_SECRET = process.env.jwt || "InnovaTech";
+const JWT_SECRET =
+  process.env.jwt ||
+  "98e4d53b3bf3cc17da517ed71272dfbc643dbf714c20d0196c1e6507fa12272c22677bdd2778a3674fb4a51f2b54e564947eb9b5d76d801bd068603ef332d4ea";
 
-exports.verificarTokenUsuario = (req, res, next) => {
+const verificarTokenUsuario = (req, res, next) => {
   let token = req.headers.authorization;
+
   if (!token)
     return res
       .status(401)
@@ -20,6 +23,7 @@ exports.verificarTokenUsuario = (req, res, next) => {
     req.user = usuarioVerificado;
     next();
   } catch (error) {
+    console.log(error);
     res.status(400).send({ estado: "Token Invalido" });
   }
 };
@@ -36,3 +40,5 @@ exports.verificarTokenUsuario = (req, res, next) => {
 //   }
 //   return res.status(401).send("Unauthorized!");
 // };
+
+module.exports = verificarTokenUsuario;

@@ -3,8 +3,9 @@ const router = express.Router();
 const Login = require("../model/login");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const salt = 10;
-const JWT_SECRET = process.env.jwt || "InnovaTech";
+const JWT_SECRET =
+  process.env.jwt ||
+  "98e4d53b3bf3cc17da517ed71272dfbc643dbf714c20d0196c1e6507fa12272c22677bdd2778a3674fb4a51f2b54e564947eb9b5d76d801bd068603ef332d4ea";
 const verificarTokenUsuario = require("./autenticacion");
 
 router.get("/", verificarTokenUsuario, async (req, res) => {
@@ -64,17 +65,15 @@ router.post("/validar", async (req, res) => {
     if (!(email && contrasena)) {
       return res.status(200).send({ estado: 0 });
     }
-    // Validate if user exist in our database
+
     const usuario = await Login.findOne({ email });
     if (usuario && (await bcrypt.compare(contrasena, usuario.contrasena))) {
       const token = jwt.sign({ usuario_id: usuario._id, email }, JWT_SECRET, {
         expiresIn: "2h",
       });
 
-      // save user token
       usuario.token = token;
 
-      // user
       res.status(200).header("auth-token", token).json(usuario);
     } else {
       res.status(200).send({ estado: 1 });
@@ -83,7 +82,6 @@ router.post("/validar", async (req, res) => {
     console.log(err);
     res.status(200).send({ estado: -1 });
   }
-  // Our register logic ends here
 });
 
 router.get("/email/:email", verificarTokenUsuario, async (req, res, next) => {
@@ -115,6 +113,7 @@ router.post("/", verificarTokenUsuario, async (req, res) => {
       tipo_usuario,
       estado,
     } = req.body;
+    const salt = bcrypt.genSalt(10);
     const encryptedPassword = await bcrypt.hash(password, salt);
     const login = new Login({
       correo,
