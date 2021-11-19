@@ -5,10 +5,11 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const salt = 10;
 const JWT_SECRET = process.env.jwt || "InnovaTech";
+const verificarTokenUsuario = require("./autenticacion");
 
-router.get("/", async (req, res) => {
+router.get("/", verificarTokenUsuario, async (req, res) => {
   try {
-    const login = await Login.find({ }, (err, docs) => {
+    const login = await Login.find({}, (err, docs) => {
       console.log(docs);
     });
     console.log(login);
@@ -18,7 +19,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", verificarTokenUsuario, async (req, res) => {
   try {
     const usuario = await Login.findById(req.params.id);
     console.log(usuario);
@@ -31,26 +32,30 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.get("/identificacion/:identificacion", async (req, res, next) => {
-  try {
-    const usuario = await Login.find()
-      .where("identificacion")
-      .equals(req.params.identificacion);
-    console.log(usuario);
-    if (usuario.length > 0) {
-      res.json(usuario);
-    } else {
+router.get(
+  "/identificacion/:identificacion",
+  verificarTokenUsuario,
+  async (req, res, next) => {
+    try {
+      const usuario = await Login.find()
+        .where("identificacion")
+        .equals(req.params.identificacion);
+      console.log(usuario);
+      if (usuario.length > 0) {
+        res.json(usuario);
+      } else {
+        res.status(201).json({
+          status: "No encontrado.",
+        });
+      }
+    } catch (err) {
+      console.log(err);
       res.status(201).json({
-        status: "No encontrado.",
+        status: "Error",
       });
     }
-  } catch (err) {
-    console.log(err);
-    res.status(201).json({
-      status: "Error",
-    });
   }
-});
+);
 
 router.post("/validar", async (req, res) => {
   try {
@@ -70,7 +75,7 @@ router.post("/validar", async (req, res) => {
       usuario.token = token;
 
       // user
-      res.status(200).json(usuario);
+      res.status(200).header("auth-token", token).json(usuario);
     } else {
       res.status(200).send({ estado: 1 });
     }
@@ -81,7 +86,7 @@ router.post("/validar", async (req, res) => {
   // Our register logic ends here
 });
 
-router.get("/email/:email", async (req, res, next) => {
+router.get("/email/:email", verificarTokenUsuario, async (req, res, next) => {
   try {
     const usuario = await Login.find().where("email").equals(req.params.email);
     console.log(usuario);
@@ -100,7 +105,7 @@ router.get("/email/:email", async (req, res, next) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", verificarTokenUsuario, async (req, res) => {
   try {
     const {
       correo,
@@ -127,7 +132,7 @@ router.post("/", async (req, res) => {
     console.log(error);
   }
 });
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verificarTokenUsuario, async (req, res) => {
   try {
     const login = await Login.findByIdAndRemove(req.params.id);
     console.log(login);
