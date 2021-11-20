@@ -18,8 +18,13 @@ app.use(express.json());
 app.use(cors({ origin: "*" }));
 
 const login = require(path.join(__dirname, "/routes/login.routes.js"));
+const estudiantes = require(path.join(
+  __dirname,
+  "/routes/estudiantes.routes.js"
+));
 
 app.use("/api/login", login);
+app.use("/api/estudiantes", estudiantes);
 
 app.listen(app.get("port"), () => {
   console.log(`server on port ${app.get("port")} `);
