@@ -9,20 +9,18 @@ const verificarTokenUsuario = require("./autenticacion");
 //router.get("/", verificarTokenUsuario, async (req, res) => {
 router.get("/", async (req, res) => {
   try {
-    const estudiantes = await Estudiante.find({}, (err, docs) => {
-      console.log(docs);
-    });
+    const estudiantes = await Estudiante.find();
     console.log(estudiantes);
     if (estudiantes?.length) {
       res.json(estudiantes);
     } else {
-      res.estado(201).json({
+      res.status(201).json({
         estado: "Estudiantes no encontrados.",
       });
     }
   } catch (error) {
     console.log(error);
-    res.estado(201).json({
+    res.status(201).json({
       estado: "Error al obtener estudiante.",
     });
   }
@@ -36,13 +34,13 @@ router.get("/:id", async (req, res) => {
     if (estudiante) {
       res.json(estudiante);
     } else {
-      res.estado(201).json({
+      res.status(201).json({
         estado: "Estudiante no encontrado.",
       });
     }
   } catch (err) {
     console.log(err);
-    res.estado(201).json({
+    res.status(201).json({
       estado: "Error al buscar estudiante",
     });
   }
@@ -60,13 +58,13 @@ router.get("/identificacion/:identificacion", async (req, res, next) => {
     if (estudiante) {
       res.json(estudiante);
     } else {
-      res.estado(201).json({
+      res.status(201).json({
         estado: "Identificación de estudiante no encontrada.",
       });
     }
   } catch (err) {
     console.log(err);
-    res.estado(201).json({
+    res.status(201).json({
       estado: "Error al buscar identificación de estudiante.",
     });
   }
@@ -90,11 +88,11 @@ router.post("/validar", async (req, res) => {
 
       res.estado(200).header("auth-token", token).json(usuario);
     } else {
-      res.estado(200).send({ estado: 1 });
+      res.status(200).send({ estado: 1 });
     }
   } catch (err) {
     console.log(err);
-    res.estado(200).send({ estado: -1 });
+    res.status(200).send({ estado: -1 });
   }
 });
 
@@ -108,13 +106,13 @@ router.get("/email/:email", async (req, res, next) => {
     if (estudiante.length > 0) {
       res.json(estudiante);
     } else {
-      res.estado(201).json({
+      res.status(201).json({
         estado: "No encontrado.",
       });
     }
   } catch (error) {
     console.log(error);
-    res.estado(201).json({
+    res.status(201).json({
       estado: "Error al buscar email de estudiante.",
     });
   }
@@ -144,7 +142,7 @@ router.post("/", async (req, res) => {
       : res.json({ estado: "Error al guardar estudiante." });
   } catch (error) {
     console.log(error);
-    res.estado(201).json({
+    res.status(201).json({
       estado: "Error al guardar estudiante.",
     });
   }
@@ -166,11 +164,20 @@ router.put("/:id", async (req, res) => {
       fecha_egreso,
       id_proyecto,
     };
-    await Estudiante.findByIdAndUpdate(req.params.id, estudiante);
-    res.json({ estado: "actualizado" });
+    const _estudiante = await Estudiante.findByIdAndUpdate(
+      req.params.id,
+      estudiante
+    );
+    if (_estudiante) {
+      res.json({ estado: "actualizado" });
+    } else {
+      res.status(201).json({
+        estado: "No encontrado.",
+      });
+    }
   } catch (error) {
     console.log(error);
-    res.estado(201).json({
+    res.status(201).json({
       estado: "Error al actualizar estudiante.",
     });
   }
@@ -181,10 +188,16 @@ router.delete("/:id", async (req, res) => {
   try {
     const estudiante = await Estudiante.findByIdAndRemove(req.params.id);
     console.log(estudiante);
-    rres.json({ estado: "eliminado" });
+    if (estudiante) {
+      res.json({ estado: "eliminado" });
+    } else {
+      res.status(201).json({
+        estado: "No encontrado.",
+      });
+    }
   } catch (error) {
     console.log(error);
-    res.estado(201).json({
+    res.status(201).json({
       estado: "Error al eliminar estudiante.",
     });
   }

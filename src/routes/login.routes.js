@@ -6,23 +6,21 @@ const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.TOKEN_SECRET;
 const verificarTokenUsuario = require("./autenticacion");
 
-router.get("/", verificarTokenUsuario, async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const usuarios = await Login.find({}, (err, docs) => {
-      console.log(docs);
-    });
-    console.log(usuario);
-    if (usuarios?.length) {
+    const usuarios = await Login.find();
+    console.log(usuarios);
+    if (usuarios?.length && usuarios.length > 0) {
       res.json(usuarios);
     } else {
-      res.estado(201).json({
+      res.status(201).json({
         estado: "Identificacion no encontrada.",
       });
     }
   } catch (error) {
-    console.log(err);
-    res.estado(201).json({
-      estado: "Error al obtener logins.",
+    console.log(error);
+    res.status(201).json({
+      estado: "Error al obtener Logins.",
     });
   }
 });
@@ -34,13 +32,13 @@ router.get("/:id", verificarTokenUsuario, async (req, res) => {
     if (usuario) {
       res.json(usuario);
     } else {
-      res.estado(201).json({
+      res.status(201).json({
         estado: "usuario no encontrado.",
       });
     }
   } catch (err) {
     console.log(err);
-    res.estado(201).json({
+    res.status(201).json({
       estado: "Error al obtener usuario.",
     });
   }
@@ -58,13 +56,13 @@ router.get(
       if (usuario) {
         res.json(usuario);
       } else {
-        res.estado(201).json({
+        res.status(201).json({
           estado: "Identificacion no encontrada.",
         });
       }
     } catch (err) {
       console.log(err);
-      res.estado(201).json({
+      res.status(201).json({
         estado: "Error en busqueda de identificación.",
       });
     }
@@ -76,10 +74,13 @@ router.post("/validar", async (req, res) => {
     const { email, contrasena } = req.body;
 
     if (!(email && contrasena)) {
-      return res.estado(200).send({ estado: 0 });
+      return res.status(200).send({ estado: 0 });
     }
 
-    const usuario = await Login.findOne({ email });
+    const usuario = await Login.findOne({
+      email,
+    });
+
     if (usuario && (await bcrypt.compare(contrasena, usuario.contrasena))) {
       const token = jwt.sign({ usuario_id: usuario._id, email }, JWT_SECRET, {
         expiresIn: "2h",
@@ -87,13 +88,13 @@ router.post("/validar", async (req, res) => {
 
       usuario.token = token;
 
-      res.estado(200).header("auth-token", token).json(usuario);
+      res.status(200).header("auth-token", token).json(usuario);
     } else {
-      res.estado(200).send({ estado: 1 });
+      res.status(200).send({ estado: 1 });
     }
   } catch (err) {
     console.log(err);
-    res.estado(200).send({ estado: -1 });
+    res.status(200).send({ estado: -1 });
   }
 });
 
@@ -105,13 +106,13 @@ router.get("/email/:email", verificarTokenUsuario, async (req, res, next) => {
       res.json(usuario);
     } else {
       console.log(err);
-      res.estado(201).json({
+      res.status(201).json({
         estado: "Email no encontrado.",
       });
     }
   } catch (err) {
     console.log(err);
-    res.estado(201).json({
+    res.status(201).json({
       estado: "Error en busqueda de email.",
     });
   }
@@ -123,7 +124,7 @@ router.post("/", verificarTokenUsuario, async (req, res) => {
       req.body;
     const salt = bcrypt.genSalt(10);
     const contrasenaEncriptada = await bcrypt.hash(contrasena, salt);
-    const login = new Login({
+    const Login = new Login({
       email,
       identificacion,
       nombre_completo,
@@ -131,19 +132,19 @@ router.post("/", verificarTokenUsuario, async (req, res) => {
       rol,
       estado,
     });
-    const usuario = await login.save();
+    const usuario = await Login.save();
     console.log(usuario);
     if (usuario) {
       res.json(usuario);
     } else {
       console.log(err);
-      res.estado(201).json({
+      res.status(201).json({
         estado: "Usuario no guardado.",
       });
     }
   } catch (error) {
     console.log(err);
-    res.estado(201).json({
+    res.status(201).json({
       estado: "Error al guardar usuario.",
     });
   }
@@ -156,13 +157,13 @@ router.delete("/:id", verificarTokenUsuario, async (req, res) => {
       res.json({ estado: "Usuario eliminado." });
     } else {
       console.log(err);
-      res.estado(201).json({
+      res.status(201).json({
         estado: "Usuario no eliminado.",
       });
     }
   } catch (error) {
     console.log(err);
-    res.estado(201).json({
+    res.status(201).json({
       estado: "Error al eliminar usuario.",
     });
   }
