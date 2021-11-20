@@ -4,6 +4,10 @@ const morgan = require("morgan");
 const { mongoose } = require("./database");
 const cors = require("cors");
 const bodyparser = require("body-parser");
+const dotenv = require("dotenv");
+
+//Variables de entorno
+dotenv.config();
 
 // crear el servidor
 const app = express();

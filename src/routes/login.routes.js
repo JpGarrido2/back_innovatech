@@ -3,20 +3,27 @@ const router = express.Router();
 const Login = require("../model/login");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET =
-  process.env.jwt ||
-  "98e4d53b3bf3cc17da517ed71272dfbc643dbf714c20d0196c1e6507fa12272c22677bdd2778a3674fb4a51f2b54e564947eb9b5d76d801bd068603ef332d4ea";
+const JWT_SECRET = process.env.TOKEN_SECRET;
 const verificarTokenUsuario = require("./autenticacion");
 
 router.get("/", verificarTokenUsuario, async (req, res) => {
   try {
-    const login = await Login.find({}, (err, docs) => {
+    const usuarios = await Login.find({}, (err, docs) => {
       console.log(docs);
     });
-    console.log(login);
-    res.json(login);
+    console.log(usuario);
+    if (usuarios?.length) {
+      res.json(usuarios);
+    } else {
+      res.estado(201).json({
+        estado: "Identificacion no encontrada.",
+      });
+    }
   } catch (error) {
-    console.log(error);
+    console.log(err);
+    res.estado(201).json({
+      estado: "Error al obtener logins.",
+    });
   }
 });
 
@@ -24,11 +31,17 @@ router.get("/:id", verificarTokenUsuario, async (req, res) => {
   try {
     const usuario = await Login.findById(req.params.id);
     console.log(usuario);
-    res.json(usuario);
+    if (usuario) {
+      res.json(usuario);
+    } else {
+      res.estado(201).json({
+        estado: "usuario no encontrado.",
+      });
+    }
   } catch (err) {
     console.log(err);
-    res.status(201).json({
-      status: "No encontrado.",
+    res.estado(201).json({
+      estado: "Error al obtener usuario.",
     });
   }
 });
@@ -42,17 +55,17 @@ router.get(
         .where("identificacion")
         .equals(req.params.identificacion);
       console.log(usuario);
-      if (usuario.length > 0) {
+      if (usuario) {
         res.json(usuario);
       } else {
-        res.status(201).json({
-          status: "No encontrado.",
+        res.estado(201).json({
+          estado: "Identificacion no encontrada.",
         });
       }
     } catch (err) {
       console.log(err);
-      res.status(201).json({
-        status: "Error",
+      res.estado(201).json({
+        estado: "Error en busqueda de identificación.",
       });
     }
   }
@@ -63,7 +76,7 @@ router.post("/validar", async (req, res) => {
     const { email, contrasena } = req.body;
 
     if (!(email && contrasena)) {
-      return res.status(200).send({ estado: 0 });
+      return res.estado(200).send({ estado: 0 });
     }
 
     const usuario = await Login.findOne({ email });
@@ -74,13 +87,13 @@ router.post("/validar", async (req, res) => {
 
       usuario.token = token;
 
-      res.status(200).header("auth-token", token).json(usuario);
+      res.estado(200).header("auth-token", token).json(usuario);
     } else {
-      res.status(200).send({ estado: 1 });
+      res.estado(200).send({ estado: 1 });
     }
   } catch (err) {
     console.log(err);
-    res.status(200).send({ estado: -1 });
+    res.estado(200).send({ estado: -1 });
   }
 });
 
@@ -88,56 +101,70 @@ router.get("/email/:email", verificarTokenUsuario, async (req, res, next) => {
   try {
     const usuario = await Login.find().where("email").equals(req.params.email);
     console.log(usuario);
-    if (usuario.length > 0) {
+    if (usuario) {
       res.json(usuario);
     } else {
-      res.status(201).json({
-        status: "No encontrado.",
+      console.log(err);
+      res.estado(201).json({
+        estado: "Email no encontrado.",
       });
     }
   } catch (err) {
     console.log(err);
-    res.status(201).json({
-      status: "Error",
+    res.estado(201).json({
+      estado: "Error en busqueda de email.",
     });
   }
 });
 
 router.post("/", verificarTokenUsuario, async (req, res) => {
   try {
-    const {
-      correo,
-      identificacion,
-      nombre_completo,
-      password,
-      tipo_usuario,
-      estado,
-    } = req.body;
+    const { email, identificacion, nombre_completo, contrasena, rol, estado } =
+      req.body;
     const salt = bcrypt.genSalt(10);
-    const encryptedPassword = await bcrypt.hash(password, salt);
+    const contrasenaEncriptada = await bcrypt.hash(contrasena, salt);
     const login = new Login({
-      correo,
+      email,
       identificacion,
       nombre_completo,
-      encryptedPassword,
-      tipo_usuario,
+      contrasenaEncriptada,
+      rol,
       estado,
     });
-    await login.save();
-
-    console.log(login);
-    res.json(login);
+    const usuario = await login.save();
+    console.log(usuario);
+    if (usuario) {
+      res.json(usuario);
+    } else {
+      console.log(err);
+      res.estado(201).json({
+        estado: "Usuario no guardado.",
+      });
+    }
   } catch (error) {
-    console.log(error);
+    console.log(err);
+    res.estado(201).json({
+      estado: "Error al guardar usuario.",
+    });
   }
 });
 router.delete("/:id", verificarTokenUsuario, async (req, res) => {
   try {
-    const login = await Login.findByIdAndRemove(req.params.id);
-    console.log(login);
-    res.json(login);
+    const estudiante = await Login.findByIdAndRemove(req.params.id);
+    console.log(estudiante);
+    if (estudiante) {
+      res.json({ estado: "Usuario eliminado." });
+    } else {
+      console.log(err);
+      res.estado(201).json({
+        estado: "Usuario no eliminado.",
+      });
+    }
   } catch (error) {
-    console.log(error);
+    console.log(err);
+    res.estado(201).json({
+      estado: "Error al eliminar usuario.",
+    });
   }
 });
 

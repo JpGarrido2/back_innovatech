@@ -6,8 +6,8 @@ const LoginSchema = new Schema({
   identificacion: { type: Number, required: true },
   nombre_completo: { type: String, required: true },
   contrasena: { type: String, required: true },
-  tipo_usuario: { type: Number, required: true },
+  rol: { type: Number, required: true },
   estado: { type: Number, required: true },
   token: { type: String, required: false },
 });
-module.exports = mongoose.model("", LoginSchema, "login");
+module.exports = mongoose.model("login", LoginSchema);

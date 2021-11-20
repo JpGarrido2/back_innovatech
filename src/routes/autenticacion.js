@@ -1,6 +1,4 @@
-const JWT_SECRET =
-  process.env.jwt ||
-  "98e4d53b3bf3cc17da517ed71272dfbc643dbf714c20d0196c1e6507fa12272c22677bdd2778a3674fb4a51f2b54e564947eb9b5d76d801bd068603ef332d4ea";
+const JWT_SECRET = process.env.TOKEN_SECRET;
 
 const verificarTokenUsuario = (req, res, next) => {
   let token = req.headers.authorization;
@@ -16,7 +14,7 @@ const verificarTokenUsuario = (req, res, next) => {
     if (token === "null" || !token)
       return res.status(401).send({ estado: "Petición No Autorizada." });
 
-    let usuarioVerificado = jwt.verify(token, config.JWT_SECRET);
+    let usuarioVerificado = jwt.verify(token, JWT_SECRET);
     if (!usuarioVerificado)
       return res.status(401).send({ estado: "Petición No autorizada." });
 
