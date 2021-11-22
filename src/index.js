@@ -21,14 +21,9 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 
-const login = require(path.join(__dirname, "/routes/login.routes.js"));
-const estudiantes = require(path.join(
-  __dirname,
-  "/routes/estudiantes.routes.js"
-));
+const usuario = require(path.join(__dirname, "/routes/usuario.routes.js"));
 
-app.use("/api/login", login);
-app.use("/api/estudiantes", estudiantes);
+app.use("/api/usuario", usuario);
 
 app.listen(app.get("port"), () => {
   console.log(`server on port ${app.get("port")} `);

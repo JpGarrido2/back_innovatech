@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Login = require("../model/login");
+const Usuario = require("../model/usuario");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.TOKEN_SECRET;
@@ -8,7 +8,7 @@ const verificarTokenUsuario = require("./autenticacion");
 
 router.get("/", async (req, res) => {
   try {
-    const usuarios = await Login.find();
+    const usuarios = await Usuario.find();
     console.log(usuarios);
     if (usuarios?.length && usuarios.length > 0) {
       res.json(usuarios);
@@ -27,7 +27,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", verificarTokenUsuario, async (req, res) => {
   try {
-    const usuario = await Login.findById(req.params.id);
+    const usuario = await Usuario.findById(req.params.id);
     console.log(usuario);
     if (usuario) {
       res.json(usuario);
@@ -49,7 +49,7 @@ router.get(
   verificarTokenUsuario,
   async (req, res, next) => {
     try {
-      const usuario = await Login.find()
+      const usuario = await Usuario.find()
         .where("identificacion")
         .equals(req.params.identificacion);
       console.log(usuario);
@@ -77,7 +77,7 @@ router.post("/validar", async (req, res) => {
       return res.status(200).send({ estado: 0 });
     }
 
-    const usuario = await Login.findOne({
+    const usuario = await Usuario.findOne({
       email,
     });
 
@@ -100,7 +100,9 @@ router.post("/validar", async (req, res) => {
 
 router.get("/email/:email", verificarTokenUsuario, async (req, res, next) => {
   try {
-    const usuario = await Login.find().where("email").equals(req.params.email);
+    const usuario = await Usuario.find()
+      .where("email")
+      .equals(req.params.email);
     console.log(usuario);
     if (usuario) {
       res.json(usuario);
@@ -124,7 +126,7 @@ router.post("/", verificarTokenUsuario, async (req, res) => {
       req.body;
     const salt = bcrypt.genSalt(10);
     const contrasenaEncriptada = await bcrypt.hash(contrasena, salt);
-    const Login = new Login({
+    const _Usuario = new Usuario({
       email,
       identificacion,
       nombre_completo,
@@ -132,7 +134,7 @@ router.post("/", verificarTokenUsuario, async (req, res) => {
       rol,
       estado,
     });
-    const usuario = await Login.save();
+    const usuario = await _Usuario.save();
     console.log(usuario);
     if (usuario) {
       res.json(usuario);
@@ -151,7 +153,7 @@ router.post("/", verificarTokenUsuario, async (req, res) => {
 });
 router.delete("/:id", verificarTokenUsuario, async (req, res) => {
   try {
-    const estudiante = await Login.findByIdAndRemove(req.params.id);
+    const estudiante = await Usuario.findByIdAndRemove(req.params.id);
     console.log(estudiante);
     if (estudiante) {
       res.json({ estado: "Usuario eliminado." });
