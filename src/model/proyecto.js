@@ -1,12 +1,17 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const LoginSchema = new Schema({
-  correo: { type: String, required: true },
+const ProyectoSchema = new Schema({
+
+  nombre_proyecto: { type: String, required: true },
   identificacion: { type: Number, required: true },
-  nombre_completo: { type: String, required: true },
-  password: { type: String, required: true },
-  tipo_usuario: { type: Number, required: true },
-  estado: { type: Number, required: true },
+  presupuesto: { type: Number, required: true },
+  estado: { type: string, required: true },
+  fecha_inicio: { type: Date, required: true },
+  fecha_terminacion: { type: Date, required: true },  
+  face_proyecto: { type: String, required: true },
+  objetivo_general: { type: string, required: true },
+  objetivo_especifico: { type: string, required: true },
+  id_usuario:{ type: object, required: true },
 });
-module.exports = mongoose.model("Login", LoginSchema, "login");
+module.exports = mongoose.model("Proyecto", ProyectoSchema, "Proyecto");
