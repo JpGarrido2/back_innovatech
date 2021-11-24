@@ -10,4 +10,4 @@ const LoginSchema = new Schema({
   estado: { type: Number, required: true },
   token: { type: String, required: false },
 });
-module.exports = mongoose.model("", LoginSchema, "login");
+module.exports = mongoose.model("Usuario", LoginSchema, "login");

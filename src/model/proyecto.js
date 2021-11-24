@@ -1,12 +1,16 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+const Autor = mongoose.model("Usuario");
 
 const LoginSchema = new Schema({
-  correo: { type: String, required: true },
-  identificacion: { type: Number, required: true },
-  nombre_completo: { type: String, required: true },
-  password: { type: String, required: true },
-  tipo_usuario: { type: Number, required: true },
-  estado: { type: Number, required: true },
+  nombre_proyecto: { type: String, required: true },
+  objetivo_general: { type: String, required: true },
+  objetivo_especifico: { type: [], required: true },
+  presupuesto: { type: String, required: true },
+  fecha_inicio: { type: Date, required: true },
+  fecha_terminacion: { type: Date, required: true },
+  id_usuario: { type: Schema.ObjectId, ref: "Usuario" },
+  estado: {},
+  fase_proyecto: {},
 });
 module.exports = mongoose.model("Login", LoginSchema, "login");
