@@ -9,6 +9,7 @@ const dotenv = require("dotenv");
 //Variables de entorno
 dotenv.config();
 
+
 // crear el servidor
 const app = express();
 
@@ -28,3 +29,6 @@ app.use("/api/usuario", usuario);
 app.listen(app.get("port"), () => {
   console.log(`server on port ${app.get("port")} `);
 });
+
+//practica de jessica 
+app.listen(4000,()=>console.log('server on port 4000'));
