@@ -1,4 +1,48 @@
 const Usuario = require("../../model/usuario");
+const bcrypt = require("bcryptjs");
+const moment = require("moment");
+moment.locale("en");
+
+const mapearArgs = (args) => {
+  if (args?.fecha_egreso) {
+    args = {
+      ...args,
+      fecha_egreso: new Date(
+        moment(args.fecha_egreso, "DD/MM/YYYY").format("L")
+      ).toISOString(),
+    };
+  }
+  if (args?.fecha_ingreso) {
+    args = {
+      ...args,
+      fecha_ingreso: new Date(
+        moment(args.fecha_ingreso, "DD/MM/YYYY").format("L")
+      ).toISOString(),
+    };
+  }
+  return args;
+};
+const mapearInput = async (input) => {
+  if (input?.password) {
+    const salt = await bcrypt.genSalt(10);
+    const passwordCrypt = await bcrypt.hash(input.password, salt);
+    input = { ...input, password: passwordCrypt };
+  }
+  if (input?.fecha_egreso) {
+    input = {
+      ...input,
+      fecha_egreso: moment(input.fecha_egreso, "DD/MM/YYYY").format("L"),
+    };
+    console.log(input);
+  }
+  if (input?.fecha_ingreso) {
+    input = {
+      ...input,
+      fecha_ingreso: moment(input.fecha_ingreso, "DD/MM/YYYY").format("L"),
+    };
+  }
+  return input;
+};
 
 module.exports.resolversUsuario = {
   usuarioPorID: async (args) => {
@@ -34,5 +78,41 @@ module.exports.resolversUsuario = {
   usuarioPorEmail: async (args) => {
     const _email = args.email;
     return await Usuario.findOne({ email: _email });
+  },
+  usuariosPorFechaIngreso: async (args) => {
+    args = mapearArgs(args);
+    console.log(args);
+    const _fecha_ingreso = args.fecha_ingreso;
+    return await Usuario.find({ fecha_ingreso: _fecha_ingreso });
+  },
+  usuariosPorFechaEgreso: async (args) => {
+    args = mapearArgs(args);
+    const _fecha_egreso = args.fecha_egreso;
+    return await Usuario.find({ fecha_egreso: _fecha_egreso });
+  },
+  crearUsuario: async ({ input }) => {
+    const _usuario = new Usuario(await mapearInput({ ...input }));
+    return await _usuario.save();
+  },
+  actualizarUsuarioPorID: async ({ _id, input }) => {
+    const _usuario = await mapearInput({ ...input });
+    return await Usuario.findByIdAndUpdate({ _id }, _usuario);
+  },
+  actualizarUsuarioPorIdentificacion: async ({ identificacion, input }) => {
+    const _usuario = await mapearInput({ ...input });
+    return await Usuario.findOneAndUpdate({ identificacion }, _usuario);
+  },
+  actualizarUsuarioPorEmail: async ({ email, input }) => {
+    const _usuario = await mapearInput({ ...input });
+    return await Usuario.findOneAndUpdate({ email }, _usuario);
+  },
+  eliminarUsuarioPorID: async ({ _id }) => {
+    return await Usuario.findByIdAndDelete({ _id });
+  },
+  eliminarUsuarioPorIdentificacion: async ({ identificacion }) => {
+    return await Usuario.findOneAndDelete({ identificacion });
+  },
+  eliminarUsuarioPorEmail: async ({ email }) => {
+    return await Usuario.findOneAndDelete({ email });
   },
 };
