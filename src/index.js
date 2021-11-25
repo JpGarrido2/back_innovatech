@@ -6,6 +6,9 @@ const cors = require("cors");
 const bodyparser = require("body-parser");
 const dotenv = require("dotenv");
 
+
+
+
 //Variables de entorno
 dotenv.config();
 
@@ -41,5 +44,3 @@ app.listen(app.get("port"), () => {
   console.log(`server on port ${app.get("port")} `);
 });
 
-//practica de jessica 
-app.listen(4000,()=>console.log('server on port 4000'));
