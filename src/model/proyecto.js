@@ -13,4 +13,4 @@ const ProyectoSchema = new Schema({
   objetivo_especifico: { type: String, required: true },
   id_usuario: { type: Object, required: true },
 });
-module.exports = mongoose.model("Proyecto", ProyectoSchema, "Proyecto");
+module.exports = mongoose.model("Proyecto", ProyectoSchema, "proyecto");

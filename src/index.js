@@ -24,9 +24,11 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 
+//Incializar esquemas y resolver del Graphql
 const root = require("./Schema/resolvers");
 const schema = require("./Schema/schema");
 
+//Ruta Graphql
 app.use(
   "/graphql",
   graphqlHTTP({

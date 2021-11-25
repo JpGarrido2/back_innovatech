@@ -10,4 +10,8 @@ const InscripcionSchema = new Schema({
 
   token: { type: String, required: false },
 });
-module.exports = mongoose.model("", InscripcionSchema, "inscripcion");
+module.exports = mongoose.model(
+  "Inscripcion",
+  InscripcionSchema,
+  "inscripcion"
+);

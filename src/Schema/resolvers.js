@@ -1,14 +1,17 @@
-const Usuario = require("../model/usuario");
-const Avance = require("../model/Avance");
+const { resolversUsuario } = require("../Schema/Resolvers/usuario.resolvers");
+const { resolversAvance } = require("../Schema/Resolvers/avance.resolvers");
+const { resolversProyecto } = require("../Schema/Resolvers/proyecto.resolvers");
+const {
+  resolversInscripcion,
+} = require("../Schema/Resolvers/inscripcion.resolvers");
 
-module.exports = {
-  usuario: async (args) => {
-    const _email = args.email;
-    return await Usuario.findOne({ email: _email });
-  },
-  avancesPorUsuario: async (args) => {
-    const _avance = await Avance.findById(args._id);
-    console.log(_avance);
-    return _avance;
-  },
+const resolvers = {
+  ...resolversUsuario,
+  ...resolversAvance,
+  ...resolversProyecto,
+  ...resolversInscripcion,
 };
+
+console.log(resolvers);
+
+module.exports = resolvers;

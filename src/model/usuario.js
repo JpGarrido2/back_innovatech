@@ -8,7 +8,7 @@ const UsuarioSchema = new Schema({
   fecha_ingreso: { type: Date, required: true },
   fecha_egreso: { type: Date, required: true },
   password: { type: String, required: true },
-  tipo_usuario: { type: Number, required: true },
+  tipo_usuario: { type: String, required: true },
   estado: { type: String, required: true },
 });
-module.exports = mongoose.model("", UsuarioSchema, "usuario");
+module.exports = mongoose.model("Usuario", UsuarioSchema, "usuario");

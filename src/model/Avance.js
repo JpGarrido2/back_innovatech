@@ -8,4 +8,4 @@ const AvanceSchema = new Schema({
   observacion: { type: Array, required: true },
   id_usuario: { type: Object, required: true },
 });
-module.exports = mongoose.model("avance", AvanceSchema, "avance");
+module.exports = mongoose.model("Avance", AvanceSchema, "avance");
