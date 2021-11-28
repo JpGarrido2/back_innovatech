@@ -61,4 +61,5 @@ module.exports.MUTATIONS_USUARIOS = `
     eliminarUsuarioPorIdentificacion(identificacion: Int!) : Usuario
     eliminarUsuarioPorEmail(email: String!) : Usuario
     login(email: String!, password: String!): UsuarioVerificado
+    logout: Boolean!
 `;

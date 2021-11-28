@@ -47,7 +47,9 @@ const mapearInput = async (input) => {
 };
 
 module.exports.resolversUsuario = {
-  usuarios: async () => {
+  usuarios: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     return await Usuario.find();
   },
   usuarioPorID: async (args) => {
@@ -55,8 +57,6 @@ module.exports.resolversUsuario = {
     return await Usuario.findById(_id);
   },
   usuarioPorNombre: async (args, context) => {
-    const { usuarioVerificado } = context;
-    console.log(usuarioVerificado);
     const _nombre_completo = args.nombre_completo;
     return await Usuario.findOne({ nombre_completo: _nombre_completo });
   },
@@ -111,6 +111,9 @@ module.exports.resolversUsuario = {
     } else {
       return null;
     }
+  },
+  logout: async () => {
+    return false;
   },
   crearUsuario: async ({ input }) => {
     const _usuario = new Usuario(await mapearInput({ ...input }));

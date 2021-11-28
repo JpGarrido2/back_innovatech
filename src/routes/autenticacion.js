@@ -1,8 +1,41 @@
+const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.TOKEN_SECRET;
 
-function obtenerTokenPayload(token) {
+const obtenerTokenPayload = (token, JWT_SECRET) => {
   return jwt.verify(token, JWT_SECRET);
-}
+};
+
+const validarUsuarioGHQL = (req, res, next) => {
+  if (req.headers.authorization) {
+    console.log(req.UsuarioVerificado);
+  }
+  next();
+};
+
+const obtenerUsuarioVerificado = (req, authToken = "") => {
+  try {
+    if (req) {
+      const authHeader = req.headers.authorization;
+      if (authHeader) {
+        const token = authHeader.replace("Bearer ", "");
+        if (!token) {
+          //throw new Error("No token found");
+          return null;
+        }
+        const usuarioVerificado = obtenerTokenPayload(token, JWT_SECRET);
+        return usuarioVerificado;
+      }
+    } else if (authToken) {
+      const usuarioVerificado = obtenerTokenPayload(authToken, JWT_SECRET);
+      return usuarioVerificado;
+    }
+    return null;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+  //throw new Error("Sin autenticación.");
+};
 
 const verificarTokenUsuario = (req, res, next) => {
   let token = req.headers.authorization;
@@ -30,32 +63,6 @@ const verificarTokenUsuario = (req, res, next) => {
   }
 };
 
-const validarUsuarioGHQL = (req, res, next) => {
-  if (req.headers.authorization) {
-    console.log(req.UsuarioVerificado);
-  }
-  next();
-};
-
-const obtenerUsuarioVerificado = (req, authToken) => {
-  if (req) {
-    const authHeader = req.headers.authorization;
-    if (authHeader) {
-      const token = authHeader.replace("Bearer ", "");
-      if (!token) {
-        throw new Error("No token found");
-      }
-      const { usuarioVerificado } = obtenerTokenPayload(token);
-      return usuarioVerificado;
-    }
-  } else if (authToken) {
-    const { usuarioVerificado } = obtenerTokenPayload(authToken);
-    return usuarioVerificado;
-  }
-
-  throw new Error("Sin autenticación.");
-};
-
 // exports.esUsuario = async (req, res, next) => {
 //   if (req.usuaurio.tipoUsuario === 0) {
 //     next();
@@ -70,7 +77,7 @@ const obtenerUsuarioVerificado = (req, authToken) => {
 // };
 
 module.exports = {
-  verificarTokenUsuario,
   obtenerUsuarioVerificado,
+  verificarTokenUsuario,
   validarUsuarioGHQL,
 };
