@@ -1,5 +1,7 @@
 const Usuario = require("../../model/usuario");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = process.env.TOKEN_SECRET;
 const moment = require("moment");
 moment.locale("en");
 
@@ -45,11 +47,16 @@ const mapearInput = async (input) => {
 };
 
 module.exports.resolversUsuario = {
+  usuarios: async () => {
+    return await Usuario.find();
+  },
   usuarioPorID: async (args) => {
     const _id = args._id;
     return await Usuario.findById(_id);
   },
-  usuarioPorNombre: async (args) => {
+  usuarioPorNombre: async (args, context) => {
+    const { usuarioVerificado } = context;
+    console.log(usuarioVerificado);
     const _nombre_completo = args.nombre_completo;
     return await Usuario.findOne({ nombre_completo: _nombre_completo });
   },
@@ -89,6 +96,21 @@ module.exports.resolversUsuario = {
     args = mapearArgs(args);
     const _fecha_egreso = args.fecha_egreso;
     return await Usuario.find({ fecha_egreso: _fecha_egreso });
+  },
+  login: async (args, request) => {
+    const _email = args.email;
+    const _password = args.password;
+    const usuario = await Usuario.findOne({ email: _email });
+
+    if (usuario && (await bcrypt.compare(_password, usuario.password))) {
+      const token = jwt.sign({ _id: usuario._id, email: _email }, JWT_SECRET, {
+        expiresIn: "2h",
+      });
+
+      return { token, usuario };
+    } else {
+      return null;
+    }
   },
   crearUsuario: async ({ input }) => {
     const _usuario = new Usuario(await mapearInput({ ...input }));

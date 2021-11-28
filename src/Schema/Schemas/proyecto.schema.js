@@ -10,7 +10,7 @@ module.exports.DEFINICION_PROYECTOS = `
         face_proyecto: String!
         objetivo_general: String!
         objetivo_especifico: String!
-        id_usuario: Object!
+        id_usuario: String!
 
     }
 
@@ -24,7 +24,20 @@ module.exports.DEFINICION_PROYECTOS = `
         face_proyecto: String!
         objetivo_general: String!
         objetivo_especifico: String!
-        id_usuario: Object!
+        id_usuario: String!
+    }
+
+    input ProyectoAInput {
+        nombre_proyecto: String
+        identificacion: Int
+        presupuesto: Int
+        estado: String
+        fecha_inicio: Date
+        fecha_terminacion: Date
+        face_proyecto: String
+        objetivo_general: String
+        objetivo_especifico: String
+        id_usuario: String
     }
 `;
 module.exports.QUERY_PROYECTOS = `
@@ -38,14 +51,14 @@ module.exports.QUERY_PROYECTOS = `
     proyecto_face_proyecto(face_proyecto: String!): Proyecto
     proyecto_objetivo_general(objetivo_general: String!): Proyecto
     proyecto_objetivo_especifico(objetivo_especifico: String!): Proyecto
-    proyecto_id_usuario(id_usuario: Object!): Proyecto
+    proyecto_id_usuario(id_usuario: String!): Proyecto
 `;
 
 module.exports.MUTATIONS_PROYECTOS = `
     crearProyecto(input: ProyectoInput): Proyecto
-    actualizarproyecto_ID(_id: ID!, input: ProyectoInput): Proyecto
-    actualizarproyecto_identificacion(identificacion: Int!, input: ProyectoInput): Proyecto
-    actualizarproyecto_estado(estado: String!, input: ProyectoInput): Proyecto
-    eliminarproyecto_objetivo_especifico(objetivo_especifico:String!, input: ProyectoInput): Proyecto
-    eliminarproyecto_ID(_id: ID!, input: ProyectoInput): Proyecto
+    actualizarproyecto_ID(_id: ID!, input: ProyectoAInput): Proyecto
+    actualizarproyecto_doc_identificacion(doc_identificacion: Int!, input: ProyectoAInput): Proyecto
+    actualizarproyecto_estado(estado: String!, input: ProyectoAInput): Proyecto
+    eliminarproyecto_objetivo_general(objetivo_general:String!): Proyecto
+    eliminarproyecto_ID(_id: ID!): Proyecto
 `;

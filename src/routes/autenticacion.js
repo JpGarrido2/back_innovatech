@@ -1,5 +1,9 @@
 const JWT_SECRET = process.env.TOKEN_SECRET;
 
+function obtenerTokenPayload(token) {
+  return jwt.verify(token, JWT_SECRET);
+}
+
 const verificarTokenUsuario = (req, res, next) => {
   let token = req.headers.authorization;
 
@@ -14,16 +18,42 @@ const verificarTokenUsuario = (req, res, next) => {
     if (token === "null" || !token)
       return res.status(401).send({ estado: "Petición No Autorizada." });
 
-    let usuarioVerificado = jwt.verify(token, JWT_SECRET);
+    let usuarioVerificado = obtenerTokenPayload(token);
     if (!usuarioVerificado)
       return res.status(401).send({ estado: "Petición No autorizada." });
 
-    req.user = usuarioVerificado;
+    req.usuario = usuarioVerificado;
     next();
   } catch (error) {
     console.log(error);
     res.status(400).send({ estado: "Token Invalido" });
   }
+};
+
+const validarUsuarioGHQL = (req, res, next) => {
+  if (req.headers.authorization) {
+    console.log(req.UsuarioVerificado);
+  }
+  next();
+};
+
+const obtenerUsuarioVerificado = (req, authToken) => {
+  if (req) {
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+      const token = authHeader.replace("Bearer ", "");
+      if (!token) {
+        throw new Error("No token found");
+      }
+      const { usuarioVerificado } = obtenerTokenPayload(token);
+      return usuarioVerificado;
+    }
+  } else if (authToken) {
+    const { usuarioVerificado } = obtenerTokenPayload(authToken);
+    return usuarioVerificado;
+  }
+
+  throw new Error("Sin autenticación.");
 };
 
 // exports.esUsuario = async (req, res, next) => {
@@ -39,4 +69,8 @@ const verificarTokenUsuario = (req, res, next) => {
 //   return res.status(401).send("Unauthorized!");
 // };
 
-module.exports = verificarTokenUsuario;
+module.exports = {
+  verificarTokenUsuario,
+  obtenerUsuarioVerificado,
+  validarUsuarioGHQL,
+};
