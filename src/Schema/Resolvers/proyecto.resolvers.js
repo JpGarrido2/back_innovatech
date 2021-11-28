@@ -1,5 +1,4 @@
 const Proyecto = require("../../model/proyecto");
-const bcrypt = require("bcryptjs");
 const moment = require("moment");
 moment.locale("en");
 

@@ -10,7 +10,7 @@ module.exports.DEFINICION_PROYECTOS = `
         face_proyecto: String!
         objetivo_general: String!
         objetivo_especifico: String!
-        id_usuario: Object!
+        id_usuario: ID!
 
     }
 
@@ -24,7 +24,7 @@ module.exports.DEFINICION_PROYECTOS = `
         face_proyecto: String!
         objetivo_general: String!
         objetivo_especifico: String!
-        id_usuario: Object!
+        id_usuario: ID!
     }
 `;
 module.exports.QUERY_PROYECTOS = `
