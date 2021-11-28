@@ -1,5 +1,9 @@
 module.exports.DEFINICION_USUARIOS = `
     
+    type UsuarioVerificado {
+        token: String!
+        usuario: Usuario!
+    }
     type Usuario {
         _id: ID!
         nombre_completo: String!
@@ -34,6 +38,7 @@ module.exports.DEFINICION_USUARIOS = `
 `;
 
 module.exports.QUERY_USUARIOS = `
+    usuarios: [Usuario]
     usuarioPorID(_id: ID!): Usuario
     usuarioPorNombre(nombre_completo: String!): Usuario
     usuarioPorIdentificacion(identificacion: Int): Usuario
@@ -44,6 +49,7 @@ module.exports.QUERY_USUARIOS = `
     usuario(email: String!): Usuario 
     usuariosPorFechaIngreso(fecha_ingreso: Date!) : [Usuario]
     usuariosPorFechaEgreso(fecha_egreso: Date!) : [Usuario]
+
 `;
 
 module.exports.MUTATIONS_USUARIOS = `
@@ -54,4 +60,6 @@ module.exports.MUTATIONS_USUARIOS = `
     eliminarUsuarioPorID(_id: ID): Usuario
     eliminarUsuarioPorIdentificacion(identificacion: Int!) : Usuario
     eliminarUsuarioPorEmail(email: String!) : Usuario
+    login(email: String!, password: String!): UsuarioVerificado
+    logout: Boolean!
 `;

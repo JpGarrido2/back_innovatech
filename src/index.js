@@ -1,16 +1,15 @@
 const express = require("express");
 const path = require("path");
 const morgan = require("morgan");
-const { mongoose } = require("./database");
 const cors = require("cors");
 const bodyparser = require("body-parser");
-const dotenv = require("dotenv");
+require("dotenv").config();
+const JWT_SECRET = process.env.TOKEN_SECRET;
+const { mongoose } = require("./database");
+const { obtenerUsuarioVerificado } = require("./routes/autenticacion");
 
 //GraphQL
 const { graphqlHTTP } = require("express-graphql");
-
-//Variables de entorno
-dotenv.config();
 
 // crear el servidor
 const app = express();
@@ -24,6 +23,9 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(cors({ origin: "*" }));
 
+//Valida autenticación en modo producción  dejar así por el momento.
+//*app.use(validarUsuarioGHQL);
+
 //Incializar esquemas y resolver del Graphql
 const root = require("./Schema/resolvers");
 const schema = require("./Schema/schema");
@@ -31,11 +33,15 @@ const schema = require("./Schema/schema");
 //Ruta Graphql
 app.use(
   "/graphql",
-  graphqlHTTP({
+  graphqlHTTP((request, response, graphQLParams) => ({
     schema: schema,
     rootValue: root,
-    graphiql: true,
-  })
+    graphiql: process.env.NODE_ENV === "development",
+    context: {
+      ...request,
+      usuarioVerificado: obtenerUsuarioVerificado(request),
+    },
+  }))
 );
 
 //
