@@ -1,19 +1,42 @@
 const Inscripcion = require("../../model/inscripcion");
+const Usuario = require("../../model/usuario");
+
+const mongoose = require("mongoose");
+
+const moment = require("moment");
+moment.locale("en");
 
 
 const mapearInput = async (input) => {
-  input.fecha_egreso = "01/01/2022";
-  input.fecha_ingreso = "01/01/2021";
-  input.estado = "Pendiente";
+  input.id_proyecto= mongoose.Types.ObjectId(input.id_proyecto);
+  input.id_usuario= mongoose.Types.ObjectId(input.id_usuario);
+  //input.fecha_egreso= "01/01/2000";
+  //input.fecha_ingreso= "01/01/2000";
+  input.estado= "Pendiente";
   return input;
 };
 
 module.exports.resolversInscripcion = {
  //---------Querys---------------------------------------------------------
+/*  crear: async () => {
+  const Post =       
+  {
+    id_proyecto: mongoose.Types.ObjectId("6021150a1f183b248c8a8e3f"),
+    id_usuario: mongoose.Types.ObjectId("6021150a1f183b248c8a8e3f"),
+    fecha_egreso: "01/01/2022",
+    fecha_ingreso: "01/01/2021",
+    estado: "Pendiente"
+  }
+        console.log(Post);
+        const _usuario = new Inscripcion(Post);
+        return await _usuario.save();
+
+},
+ */
+
+
   crearInscripcion: async ({ input }) => {
     const _inscripcion = new Inscripcion(await mapearInput({ ...input }));
-    //const _inscripcion = new Inscripcion(input);
-    console.log(_inscripcion);
     return await _inscripcion.save();
   },
   listarInscripciones: async () => {
@@ -22,6 +45,15 @@ module.exports.resolversInscripcion = {
   inscripcionPorID: async (args) => {
     const _id = args._id;
     return await Inscripcion.findById(_id);
+  },
+  inscripcionesPorIDProyecto: async (args) => {
+    const id = args._id;
+    return await Inscripcion.find({ id_proyecto: id });
+    
+  },
+  inscripcionesPorIDUsuario: async (args) => {
+    const id = args._id;
+    return await Inscripcion.find({ id_usuario: id });
   },
   inscripcionPorEstado: async (args) => {
     const _estado = args.estado;
@@ -36,19 +68,30 @@ module.exports.resolversInscripcion = {
     const _fecha_egreso = args.fecha_egreso;
     return await Inscripcion.find({ fecha_egreso: _fecha_egreso });
   },
+
+
   //-----------Mutaciones---------------------------------------------------
   eliminarInscripcionPorID: async ({ _id }) => {
     return await Inscripcion.findByIdAndDelete({ _id });
   },
   eliminarInscripcionPorEstado: async ({ estado }) => {
     //return await Inscripcion.findByIdAndDelete({ estado });
-    console.log({estado});
-    return await Inscripcion.deleteMany({ estado : estado})
+    await Inscripcion.deleteMany({ estado : estado})
+    return "Eliminación exitosa"
   },
-  aceptarInscripcionPorID: async ({_id, estado}) => {
+  actualizarEstadoInscripcionPorID: async ({_id, estado}) => {
     //return await Inscripcion.findByIdAndDelete({ estado });
-    console.log({estado});
-    return await Inscripcion.findByIdAndUpdate(_id, {estado: "Aceptada"}, {new: true})
+    
+    if(estado=="Aceptada"){
+      let now= moment().format("L");
+      return await Inscripcion.findByIdAndUpdate(_id, 
+        {estado: estado,
+          fecha_ingreso: now 
+        }, {new: true})
+    } else{
+      return await Inscripcion.findByIdAndUpdate(_id, 
+        {estado: estado}, {new: true})
+    }
   },
   
   
