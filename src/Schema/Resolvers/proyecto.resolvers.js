@@ -22,14 +22,14 @@ module.exports.resolversProyecto = {
     return datos;
   },
 
-  // crearProyecto: async ({ input }) => {
-  //   const _proyecto = new Proyecto(await mapearInput({ ...input }));
-  //   return await _proyecto.save();
-  // },
-  // actualizarProyecto_ID: async ({ _id, input }) => {
-  //   const _proyecto = await mapearInput({ ...input });
-  //   return await Proyecto.findByIdAndUpdate({ _id }, _proyecto);
-  // },
+  crearProyecto: async ({ input }) => {
+    const _proyecto = new Proyecto({ ...input });
+    return await _proyecto.save();
+  },
+  actualizarProyecto_ID: async ({ _id, input }) => {
+    const _proyecto = { ...input };
+    return await Proyecto.findByIdAndUpdate({ _id }, _proyecto);
+  },
   // actualizarproyecto_doc_identificacion: async ({
   //   doc_identificacion,
   //   input,

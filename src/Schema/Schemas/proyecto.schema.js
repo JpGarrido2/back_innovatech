@@ -15,7 +15,6 @@ module.exports.DEFINICION_PROYECTOS = `
 
     input ProyectoInput {
         nombre_proyecto: String!
-        identificacion: Int!
         presupuesto: Int!
         estado: String!
         fecha_inicio: Date!
