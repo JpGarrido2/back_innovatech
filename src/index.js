@@ -30,6 +30,7 @@ app.use(cors({ origin: "*" }));
 const root = require("./Schema/resolvers");
 const schema = require("./Schema/schema");
 
+console.log(root);
 //Ruta Graphql
 app.use(
   "/graphql",
