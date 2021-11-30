@@ -1,4 +1,3 @@
-
 module.exports.DEFINICION_INSCRIPCIONES = `
     type Inscripcion {
         _id: ID!
@@ -8,6 +7,8 @@ module.exports.DEFINICION_INSCRIPCIONES = `
         fecha_ingreso: Date
         fecha_egreso: Date
     }
+
+    
     
 
     input InscripcionInput {
@@ -23,7 +24,6 @@ module.exports.QUERY_INSCRIPCIONES = `
     inscripcionesPorIDProyecto(_id: ID!): [Inscripcion]
     inscripcionesPorIDUsuario(_id: ID!): [Inscripcion]
     inscripcionPorEstado(estado: String!) : [Inscripcion]
-
     inscripcionPorFechaIngreso(fecha_ingreso: Date!) : [Inscripcion]
     inscripcionPorFechaEgreso(fecha_egreso: Date!) : [Inscripcion]
 `;

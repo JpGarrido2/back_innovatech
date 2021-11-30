@@ -1,24 +1,23 @@
 const Inscripcion = require("../../model/inscripcion");
 const Usuario = require("../../model/usuario");
-
+const Proyecto = require("../../model/proyecto");
 const mongoose = require("mongoose");
 
 const moment = require("moment");
 moment.locale("en");
 
-
 const mapearInput = async (input) => {
-  input.id_proyecto= mongoose.Types.ObjectId(input.id_proyecto);
-  input.id_usuario= mongoose.Types.ObjectId(input.id_usuario);
+  input.id_proyecto = mongoose.Types.ObjectId(input.id_proyecto);
+  input.id_usuario = mongoose.Types.ObjectId(input.id_usuario);
   //input.fecha_egreso= "01/01/2000";
   //input.fecha_ingreso= "01/01/2000";
-  input.estado= "Pendiente";
+  input.estado = "Pendiente";
   return input;
 };
 
 module.exports.resolversInscripcion = {
- //---------Querys---------------------------------------------------------
-/*  crear: async () => {
+  //---------Querys---------------------------------------------------------
+  /*  crear: async () => {
   const Post =       
   {
     id_proyecto: mongoose.Types.ObjectId("6021150a1f183b248c8a8e3f"),
@@ -34,7 +33,6 @@ module.exports.resolversInscripcion = {
 },
  */
 
-
   crearInscripcion: async ({ input }) => {
     const _inscripcion = new Inscripcion(await mapearInput({ ...input }));
     return await _inscripcion.save();
@@ -49,11 +47,16 @@ module.exports.resolversInscripcion = {
   inscripcionesPorIDProyecto: async (args) => {
     const id = args._id;
     return await Inscripcion.find({ id_proyecto: id });
-    
   },
   inscripcionesPorIDUsuario: async (args) => {
     const id = args._id;
-    return await Inscripcion.find({ id_usuario: id });
+    let datos = await Inscripcion.find({ id_usuario: id }).populate({
+      path: "id_proyecto",
+      select: "nombre_proyecto",
+    });
+    let resul = { datos: [...datos] };
+    console.log(resul.datos);
+    return datos;
   },
   inscripcionPorEstado: async (args) => {
     const _estado = args.estado;
@@ -69,30 +72,31 @@ module.exports.resolversInscripcion = {
     return await Inscripcion.find({ fecha_egreso: _fecha_egreso });
   },
 
-
   //-----------Mutaciones---------------------------------------------------
   eliminarInscripcionPorID: async ({ _id }) => {
     return await Inscripcion.findByIdAndDelete({ _id });
   },
   eliminarInscripcionPorEstado: async ({ estado }) => {
     //return await Inscripcion.findByIdAndDelete({ estado });
-    await Inscripcion.deleteMany({ estado : estado})
-    return "Eliminación exitosa"
+    await Inscripcion.deleteMany({ estado: estado });
+    return "Eliminación exitosa";
   },
-  actualizarEstadoInscripcionPorID: async ({_id, estado}) => {
+  actualizarEstadoInscripcionPorID: async ({ _id, estado }) => {
     //return await Inscripcion.findByIdAndDelete({ estado });
-    
-    if(estado=="Aceptada"){
-      let now= moment().format("L");
-      return await Inscripcion.findByIdAndUpdate(_id, 
-        {estado: estado,
-          fecha_ingreso: now 
-        }, {new: true})
-    } else{
-      return await Inscripcion.findByIdAndUpdate(_id, 
-        {estado: estado}, {new: true})
+
+    if (estado == "Aceptada") {
+      let now = moment().format("L");
+      return await Inscripcion.findByIdAndUpdate(
+        _id,
+        { estado: estado, fecha_ingreso: now },
+        { new: true }
+      );
+    } else {
+      return await Inscripcion.findByIdAndUpdate(
+        _id,
+        { estado: estado },
+        { new: true }
+      );
     }
   },
-  
-  
 };

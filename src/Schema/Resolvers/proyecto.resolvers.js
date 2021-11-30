@@ -2,6 +2,26 @@ const Proyecto = require("../../model/proyecto");
 const moment = require("moment");
 moment.locale("en");
 
+const mapearArgs = (args) => {
+  if (args?.fecha_inicio) {
+    args = {
+      ...args,
+      fecha_inicio: new Date(
+        moment(args.fecha_inicio, "DD/MM/YYYY").format("L")
+      ).toISOString(),
+    };
+  }
+  if (args?.fecha_terminacion) {
+    args = {
+      ...args,
+      fecha_terminacion: new Date(
+        moment(args.fecha_terminacion, "DD/MM/YYYY").format("L")
+      ).toISOString(),
+    };
+  }
+  return args;
+};
+
 module.exports.resolversProyecto = {
   proyecto_ID: async (args) => {
     const _id = args._id;
@@ -23,9 +43,11 @@ module.exports.resolversProyecto = {
   },
 
   crearProyecto: async ({ input }) => {
-    const _proyecto = new Proyecto({ ...input });
+    const _proyecto = new Proyecto(mapearArgs({ ...input }));
+    
     return await _proyecto.save();
   },
+
   actualizarProyecto_ID: async ({ _id, input }) => {
     const _proyecto = { ...input };
     return await Proyecto.findByIdAndUpdate({ _id }, _proyecto);
