@@ -40,6 +40,7 @@ module.exports.DEFINICION_PROYECTOS = `
 `;
 module.exports.QUERY_PROYECTOS = `
     proyecto_ID(_id: ID!): Proyecto
+    proyectos:[Proyecto]
     proyecto_nombre(nombre_proyecto: String!): Proyecto
     proyecto_presupuesto(presupuesto: Int!): Proyecto
     proyecto_estado(estado: String!): [Proyecto!]!

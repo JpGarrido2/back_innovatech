@@ -23,6 +23,9 @@ const mapearArgs = (args) => {
 };
 
 module.exports.resolversProyecto = {
+  proyectos: async()=>{
+    return await Proyecto.find();
+  },
   proyecto_ID: async (args) => {
     const _id = args._id;
     return await Proyecto.findById(_id);
