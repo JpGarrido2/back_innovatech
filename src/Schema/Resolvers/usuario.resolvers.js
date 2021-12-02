@@ -54,7 +54,7 @@ module.exports.resolversUsuario = {
   },
   usuarioPorID: async (args) => {
     const _id = args._id;
-    
+
     return await Usuario.findById(_id);
   },
   usuarioPorNombre: async (args, context) => {
