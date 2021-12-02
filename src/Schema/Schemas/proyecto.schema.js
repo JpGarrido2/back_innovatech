@@ -9,10 +9,19 @@ module.exports.DEFINICION_PROYECTOS = `
         fecha_inicio: Date!
         fecha_terminacion: Date!
         face_proyecto: String!
-        id_usuario: String!
+        id_usuario: ID!
 
     }
-
+    type ProyectoUsuario{
+        nombre_completo: String!
+        identificacion: Int!
+        estado: String!
+        tipo_usuario: String!
+        email: String!
+        fecha_ingreso: Date!
+        fecha_egreso: Date!
+    }
+    
     input ProyectoInput {
         nombre_proyecto: String!
         presupuesto: Int!
@@ -54,8 +63,8 @@ module.exports.QUERY_PROYECTOS = `
 
 module.exports.MUTATIONS_PROYECTOS = `
     crearProyecto(input: ProyectoInput): Proyecto
-    actualizarproyecto_ID(_id: ID!, input: ProyectoAInput): Proyecto
-    actualizarproyecto_doc_identificacion(doc_identificacion: Int!, input: ProyectoAInput): Proyecto
+    actualizarProyecto_ID(_id: ID!, input: ProyectoAInput): Proyecto
+    actualizar_fecha_terminacion(fecha_terminacion: String!, input:ProyectoAInput):Proyecto
     actualizarproyecto_estado(estado: String!, input: ProyectoAInput): Proyecto
     eliminarproyecto_objetivo_general(objetivo_general:String!): Proyecto
     eliminarproyecto_ID(_id: ID!): Proyecto

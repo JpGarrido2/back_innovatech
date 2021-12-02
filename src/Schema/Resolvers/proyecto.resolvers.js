@@ -23,8 +23,9 @@ const mapearArgs = (args) => {
 };
 
 module.exports.resolversProyecto = {
-  proyectos: async()=>{
-    return await Proyecto.find();
+  proyectos: async () => {
+    let datos = await Proyecto.find();
+    return datos;
   },
   proyecto_ID: async (args) => {
     const _id = args._id;
@@ -46,32 +47,36 @@ module.exports.resolversProyecto = {
   },
 
   crearProyecto: async ({ input }) => {
-    const _proyecto = new Proyecto(mapearArgs({ ...input }));
-    
+    const _proyecto = new Proyecto(input);
+
     return await _proyecto.save();
   },
 
   actualizarProyecto_ID: async ({ _id, input }) => {
     const _proyecto = { ...input };
+
     return await Proyecto.findByIdAndUpdate({ _id }, _proyecto);
   },
-  // actualizarproyecto_doc_identificacion: async ({
-  //   doc_identificacion,
-  //   input,
-  // }) => {
-  //   const _proyecto = await mapearInput({ ...input });
-  //   return await Proyecto.findOneAndUpdate({ doc_identificacion }, _proyecto);
-  // },
-  // actualizarproyecto_estado: async ({ estado, input }) => {
-  //   const _proyecto = await mapearInput({ ...input });
-  //   return await Proyecto.findOneAndUpdate({ estado }, _proyecto);
-  // },
-
-  // eliminarproyecto_objetivo_general: async ({ objetivo_general }) => {
-  //   const _proyecto = await mapearInput({ ...input });
-  //   return await Proyecto.findOneAndDelete({ objetivo_general }, _proyecto);
-  // },
-  // eliminarproyecto_ID: async ({ _id }) => {
-  //   return await Usuario.findByIdAndDelete({ _id });
-  // },
+  actualizarproyecto_doc_identificacion: async ({
+    doc_identificacion,
+    input,
+  }) => {
+    const _proyecto = await mapearInput({ ...input });
+    return await Proyecto.findOneAndUpdate({ doc_identificacion }, _proyecto);
+  },
+  actualizarproyecto_estado: async ({ estado, input }) => {
+    const _proyecto = await mapearInput({ ...input });
+    return await Proyecto.findOneAndUpdate({ estado }, _proyecto);
+  },
+  actualizar_fecha_terminacion: async ({ fecha, input }) => {
+    const _proyecto = await mapearInput({ ...input });
+    return await Proyecto.findOneAndUpdate({ fecha }, _proyecto);
+  },
+  eliminarproyecto_objetivo_general: async ({ objetivo_general }) => {
+    const _proyecto = await mapearInput({ ...input });
+    return await Proyecto.findOneAndDelete({ objetivo_general }, _proyecto);
+  },
+  eliminarproyecto_ID: async ({ _id }) => {
+    return await Usuario.findByIdAndDelete({ _id });
+  },
 };
