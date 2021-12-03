@@ -47,10 +47,16 @@ const mapearInput = async (input) => {
 };
 
 module.exports.resolversUsuario = {
-  usuarios: async (args, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
-    return await Usuario.find();
+  //usuarios: async (args, context) => {
+  usuarios: async (args) => {
+    // const { usuarioVerificado } = context;
+    // if (!usuarioVerificado) throw new Error("Prohibido");
+    const usuario = await Usuario.findById(args.id_usuario);
+    if (usuario && usuario.tipo_usuario === "administrador") {
+      return await Usuario.find();
+    } else {
+      throw new Error("Prohibido. No tiene suficientes permisos.");
+    }
   },
   usuarioPorID: async (args) => {
     const _id = args._id;
@@ -103,14 +109,21 @@ module.exports.resolversUsuario = {
     const _password = args.password;
     const usuario = await Usuario.findOne({ email: _email });
 
-    if (usuario && (await bcrypt.compare(_password, usuario.password))) {
-      const token = jwt.sign({ _id: usuario._id, email: _email }, JWT_SECRET, {
-        expiresIn: "2h",
-      });
-
-      return { token, usuario };
+    if (usuario && usuario.estado === "autorizado") {
+      if (await bcrypt.compare(_password, usuario.password)) {
+        const token = jwt.sign(
+          { _id: usuario._id, email: _email },
+          JWT_SECRET,
+          {
+            expiresIn: "2h",
+          }
+        );
+        return { token, usuario };
+      } else {
+        throw new Error("No autenticado.");
+      }
     } else {
-      return null;
+      throw new Error("No autorizado.");
     }
   },
   logout: async () => {
@@ -120,9 +133,25 @@ module.exports.resolversUsuario = {
     const _usuario = new Usuario(await mapearInput({ ...input }));
     return await _usuario.save();
   },
-  actualizarUsuarioPorID: async ({ _id, input }) => {
-    const _usuario = await mapearInput({ ...input });
-    return await Usuario.findByIdAndUpdate({ _id }, _usuario);
+  actualizarUsuarioPorID: async ({ _id, id_usuario, input }) => {
+    if ("estado" in input) {
+      if (id_usuario) {
+        const usuario = await Usuario.findById({ _id: id_usuario });
+        if (usuario && usuario.tipo_usuario === "administrador") {
+          const _usuario = await mapearInput({ ...input });
+          return await Usuario.findByIdAndUpdate({ _id }, _usuario);
+        } else {
+          throw new Error("Prohibido. No tiene suficientes permisos.");
+        }
+      } else {
+        throw new Error(
+          "Prohibido. No tiene suficientes permisos para modificar el estado."
+        );
+      }
+    } else {
+      const _usuario = await mapearInput({ ...input });
+      return await Usuario.findByIdAndUpdate({ _id }, _usuario);
+    }
   },
   actualizarUsuarioPorIdentificacion: async ({ identificacion, input }) => {
     const _usuario = await mapearInput({ ...input });
