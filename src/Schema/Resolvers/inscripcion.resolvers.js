@@ -2,7 +2,6 @@ const Inscripcion = require("../../model/inscripcion");
 const Usuario = require("../../model/usuario");
 const Proyecto = require("../../model/proyecto");
 const mongoose = require("mongoose");
-
 const moment = require("moment");
 moment.locale("en");
 
