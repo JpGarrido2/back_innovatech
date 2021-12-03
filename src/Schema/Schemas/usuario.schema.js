@@ -1,8 +1,8 @@
 module.exports.DEFINICION_USUARIOS = `
     
     type UsuarioVerificado {
-        token: String!
-        usuario: Usuario!
+        token: String
+        usuario: Usuario
     }
     type Usuario {
         _id: ID!
@@ -38,7 +38,7 @@ module.exports.DEFINICION_USUARIOS = `
 `;
 
 module.exports.QUERY_USUARIOS = `
-    usuarios: [Usuario]
+    usuarios(id_usuario: ID!): [Usuario]
     usuarioPorID(_id: ID!): Usuario
     usuarioPorNombre(nombre_completo: String!): Usuario
     usuarioPorIdentificacion(identificacion: Int): Usuario
@@ -54,7 +54,7 @@ module.exports.QUERY_USUARIOS = `
 
 module.exports.MUTATIONS_USUARIOS = `
     crearUsuario(input: UsuarioInput): Usuario
-    actualizarUsuarioPorID(_id: ID!, input: UsuarioAInput): Usuario
+    actualizarUsuarioPorID(_id: ID!, id_usuario: ID, input: UsuarioAInput): Usuario
     actualizarUsuarioPorIdentificacion(identificacion: Int!, input: UsuarioAInput) : Usuario
     actualizarUsuarioPorEmail(email: String!, input: UsuarioAInput) : Usuario
     eliminarUsuarioPorID(_id: ID): Usuario
