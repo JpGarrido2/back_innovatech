@@ -77,8 +77,16 @@ module.exports.resolversInscripcion = {
   },
   eliminarInscripcionPorEstado: async ({ estado }) => {
     //return await Inscripcion.findByIdAndDelete({ estado });
-    await Inscripcion.deleteMany({ estado: estado });
-    return "Eliminación exitosa";
+    const eliminado = await Inscripcion.deleteMany({ estado: estado });
+    console.log(eliminado.deletedCount);
+    if (eliminado.deletedCount>0){
+
+      return "Eliminación exitosa";
+    } else {
+
+      return "No se encontraron inscripciones para eliminar";
+    }
+    
   },
   actualizarEstadoInscripcionPorID: async ({ _id, estado }) => {
     //return await Inscripcion.findByIdAndDelete({ estado });
