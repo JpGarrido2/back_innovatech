@@ -40,8 +40,9 @@ module.exports.resolversInscripcion = {
     const _inscripcion = new Inscripcion(await mapearInput({ ...input }));
     return await _inscripcion.save();
     } else {
-      console.log("Ya esta inscrito");
-      return null;
+      throw new Error("Ya se encuentra inscrito a este proyecto.");
+      //console.log("Ya esta inscrito");
+      //return null;
     }
   },
   inscripcionesPorIDLider: async (args) => {
