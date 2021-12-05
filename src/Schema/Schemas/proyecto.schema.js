@@ -2,7 +2,7 @@ module.exports.DEFINICION_PROYECTOS = `
     type Proyecto {
         _id: ID!
         objetivo_general: String!
-        objetivo_especifico: [Objetivo_especifico]
+        objetivo_especifico: [Objetivo_especifico!]!
         nombre_proyecto: String!
         presupuesto: Int!
         estado: String!
