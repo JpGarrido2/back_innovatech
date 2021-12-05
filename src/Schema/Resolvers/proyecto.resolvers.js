@@ -1,5 +1,5 @@
 const Proyecto = require("../../model/proyecto");
-const Avance = require("../../model/Avance")
+const Avance = require("../../model/Avance");
 const moment = require("moment");
 moment.locale("en");
 
@@ -38,7 +38,6 @@ module.exports.resolversProyecto = {
     return datos;
   },
 
-  
   // pendiente
   proyecto_avances: async (args) => {
     const _idProyecto = args._id;
@@ -64,19 +63,41 @@ module.exports.resolversProyecto = {
     const datos = await Proyecto.find({ estado: estado });
     return datos;
   },
-
+  // pendiente filtrar los proyectos solo del lider
   proyecto_id_usuario: async (args) => {
     const usuario_id = args.id_usuario;
-    let datos = await Proyecto.find({ id_usuario: usuario_id }).populate({
-      path: "id_usuario",
-      select: "_id nombre_completo tipo_usuario email",
-    });
-    return datos;
+    let datos = await Proyecto.find({ id_usuario: usuario_id })
+      .lean()
+      .populate({
+        path: "id_usuario",
+        select: "_id nombre_completo tipo_usuario email",
+      });
+    let a = { ...datos };
+    let b = a["0"].id_usuario;
+    let c = b;
+    let d = JSON.stringify(c[0].tipo_usuario);
+    let lider = d.replace(/['"]+/g, '');
+    
+    if (lider == "lider"){
+      return datos;
+    }else{
+      
+    }
+    
+    
+    
   },
 
   updateProyecto: async ({ _id, input }) => {
     const _proyecto = { ...input };
-     return await Proyecto.findByIdAndUpdate({ _id }, _proyecto);
+    const proyectoId = await Proyecto.findById({ _id });
+    console.log(proyectoId.estado);
+    const datos = await Proyecto.findByIdAndUpdate({ _id }, _proyecto);
+    if (proyectoId.estado == "activo") {
+      return datos;
+    } else {
+      return;
+    }
   },
 
   crearProyecto: async ({ input }) => {

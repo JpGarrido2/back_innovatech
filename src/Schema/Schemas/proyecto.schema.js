@@ -7,8 +7,8 @@ module.exports.DEFINICION_PROYECTOS = `
         presupuesto: Int!
         estado: String!
         fecha_inicio: Date!
-        fecha_terminacion: Date!
-        face_proyecto: String!
+        fecha_terminacion: Date
+        face_proyecto: String
         id_usuario: [UsuarioProyecto]
         
     
@@ -45,8 +45,8 @@ module.exports.DEFINICION_PROYECTOS = `
         presupuesto: Int!
         estado: String!
         fecha_inicio: Date!
-        fecha_terminacion: Date!
-        face_proyecto: String!
+        fecha_terminacion: Date
+        face_proyecto: String
         objetivo_general: String!
         objetivo_especifico: [ObjetivoInput]
         id_usuario: String!
