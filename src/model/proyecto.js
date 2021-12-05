@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const { Schema } = mongoose;
 
 const ProyectoSchema = new Schema({
@@ -6,10 +7,10 @@ const ProyectoSchema = new Schema({
   presupuesto: { type: Number, required: true },
   estado: { type: String, required: true },
   fecha_inicio: { type: Date, required: true },
-  fecha_terminacion: { type: Date, required: true },
-  face_proyecto: { type: String, required: true },
+  fecha_terminacion: { type: Date, },
+  face_proyecto: { type: String,  },
   objetivo_general: { type: String, required: true },
   objetivo_especifico: { type: Array, required: true },
-  id_usuario: { type: mongoose.Types.ObjectId, required: true, ref: "Usuario" },
+  id_usuario: [{ type: mongoose.Types.ObjectId, required: true, ref: "Usuario" }],
 });
 module.exports = mongoose.model("Proyecto", ProyectoSchema, "proyecto");
