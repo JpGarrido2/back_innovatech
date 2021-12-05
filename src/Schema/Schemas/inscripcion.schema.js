@@ -19,10 +19,12 @@ module.exports.DEFINICION_INSCRIPCIONES = `
 `;
 
 module.exports.QUERY_INSCRIPCIONES = `
+    inscripcionesPorIDLider(_idL: ID!, _idP: ID!): [Inscripcion]
     listarInscripciones: [Inscripcion]
     inscripcionPorID(_id: ID!): Inscripcion
     inscripcionesPorIDProyecto(_id: ID!): [Inscripcion]
     inscripcionesPorIDUsuario(_id: ID!): [Inscripcion]
+    inscripcionPorIDUsuarioyEstado(_id: ID!, estado: String!): [Inscripcion]
     inscripcionPorEstado(estado: String!) : [Inscripcion]
     inscripcionPorFechaIngreso(fecha_ingreso: Date!) : [Inscripcion]
     inscripcionPorFechaEgreso(fecha_egreso: Date!) : [Inscripcion]
