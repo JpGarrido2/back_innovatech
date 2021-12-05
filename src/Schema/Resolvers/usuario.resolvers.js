@@ -49,11 +49,14 @@ const mapearInput = async (input) => {
 module.exports.resolversUsuario = {
   //usuarios: async (args, context) => {
   usuarios: async (args) => {
+    console.log(args);
     // const { usuarioVerificado } = context;
     // if (!usuarioVerificado) throw new Error("Prohibido");
     const usuario = await Usuario.findById(args.id_usuario);
     if (usuario && usuario.tipo_usuario === "administrador") {
       return await Usuario.find();
+    } else if (usuario && usuario.tipo_usuario === "líder") {
+      return await Usuario.find({ tipo_usuario: "estudiante" });
     } else {
       throw new Error("Prohibido. No tiene suficientes permisos.");
     }
@@ -137,7 +140,11 @@ module.exports.resolversUsuario = {
     if ("estado" in input) {
       if (id_usuario) {
         const usuario = await Usuario.findById({ _id: id_usuario });
-        if (usuario && usuario.tipo_usuario === "administrador") {
+        if (
+          usuario &&
+          (usuario.tipo_usuario === "administrador" ||
+            usuario.tipo_usuario === "líder")
+        ) {
           const _usuario = await mapearInput({ ...input });
           return await Usuario.findByIdAndUpdate({ _id }, _usuario);
         } else {
