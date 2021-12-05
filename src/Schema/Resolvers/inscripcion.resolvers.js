@@ -34,8 +34,32 @@ module.exports.resolversInscripcion = {
  */
 
   crearInscripcion: async ({ input }) => {
+    const idu = input.id_usuario;
+    const idp = input.id_proyecto;
+    const _ins = await Inscripcion.findOne({ id_proyecto: idp, id_usuario: idu});
+    if(!_ins){
     const _inscripcion = new Inscripcion(await mapearInput({ ...input }));
     return await _inscripcion.save();
+    } else {
+      console.log("Ya esta inscrito");
+      return null;
+    }
+  },
+  inscripcionesPorIDLider: async (args) => {
+    const idL = args._idL;
+    const idP = args._idP;
+    const proyecto = await Proyecto.findById(idP);
+    console.log(proyecto.id_usuario);
+    console.log(idL);
+    if (proyecto.id_usuario == idL){
+      const inscripciones = await Inscripcion.find({ id_proyecto: idP});
+      console.log(inscripciones);
+      return inscripciones;
+    } else{
+      return null;
+    }
+   //let insLider = inscripciones.filter(inscripciones => inscripciones.id_proyecto === _id);
+   
   },
   listarInscripciones: async () => {
     return await Inscripcion.find();
@@ -48,17 +72,19 @@ module.exports.resolversInscripcion = {
     const id = args._id;
     return await Inscripcion.find({ id_proyecto: id });
   },
+
   inscripcionesPorIDUsuario: async (args) => {
     const id = args._id;
-    let datos = await Inscripcion.find({ id_usuario: id }).populate({
-      path: "id_proyecto",
-      select: "nombre_proyecto",
-    });
+    let datos = await Inscripcion.find({ id_usuario: id });
     let resul = { datos: [...datos] };
     console.log(resul.datos);
     return datos;
   },
   inscripcionPorEstado: async (args) => {
+    const _estado = args.estado;
+    return await Inscripcion.find({ estado: _estado });
+  },
+  inscripcionPorIDUsuarioyEstado: async (args) => {
     const _estado = args.estado;
     return await Inscripcion.find({ estado: _estado });
   },
