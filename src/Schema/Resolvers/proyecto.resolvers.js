@@ -1,6 +1,13 @@
 const Proyecto = require("../../model/proyecto");
+const Avance = require("../../model/Avance");
 const moment = require("moment");
 moment.locale("en");
+
+const mapearInput = async (input) => {
+  input.objetivo_especifico = input.objetivo_especifico;
+
+  return input;
+};
 
 const mapearArgs = (args) => {
   if (args?.fecha_inicio) {
@@ -24,9 +31,20 @@ const mapearArgs = (args) => {
 
 module.exports.resolversProyecto = {
   proyectos: async () => {
-    let datos = await Proyecto.find();
+    let datos = await Proyecto.find().populate({
+      path: "id_usuario",
+      select: "_id nombre_completo tipo_usuario email",
+    });
     return datos;
   },
+
+  // pendiente
+  proyecto_avances: async (args) => {
+    const _idProyecto = args._id;
+    const _idAvance = args._idAvance;
+    return await Proyecto.findById(_id);
+  },
+
   proyecto_ID: async (args) => {
     const _id = args._id;
     return await Proyecto.findById(_id);
@@ -45,11 +63,58 @@ module.exports.resolversProyecto = {
     const datos = await Proyecto.find({ estado: estado });
     return datos;
   },
+  // pendiente filtrar los proyectos solo del lider
+  proyecto_id_usuario: async (args) => {
+    const usuario_id = args.id_usuario;
+    let datos = await Proyecto.find({ id_usuario: usuario_id })
+      .lean()
+      .populate({
+        path: "id_usuario",
+        select: "_id nombre_completo tipo_usuario email",
+      });
+    let a = { ...datos };
+    let b = a["0"].id_usuario;
+    let c = b;
+    let d = JSON.stringify(c[0].tipo_usuario);
+    let lider = d.replace(/['"]+/g, '');
+    
+    if (lider == "lider"){
+      return datos;
+    }else{
+      
+    }
+    
+    
+    
+  },
+
+  updateProyecto: async ({ _id, input }) => {
+    const _proyecto = { ...input };
+    const proyectoId = await Proyecto.findById({ _id });
+    console.log(proyectoId.estado);
+    const datos = await Proyecto.findByIdAndUpdate({ _id }, _proyecto);
+    if (proyectoId.estado == "activo") {
+      return datos;
+    } else {
+      return;
+    }
+  },
 
   crearProyecto: async ({ input }) => {
-    const _proyecto = new Proyecto(input);
-
+    const _proyecto = new Proyecto(await mapearInput({ ...input }));
     return await _proyecto.save();
+  },
+
+  crearObjetivoEspecifico: async ({ _id, input }) => {
+    const _proyecto = await Proyecto.findById({ _id });
+
+    const _objetivo = _proyecto.objetivo_especifico;
+    const proyecto = await Proyecto.findByIdAndUpdate(
+      { _id },
+      { objetivo_especifico: [..._objetivo, input] }
+    );
+
+    return proyecto;
   },
 
   actualizarProyecto_ID: async ({ _id, input }) => {
@@ -61,19 +126,26 @@ module.exports.resolversProyecto = {
     doc_identificacion,
     input,
   }) => {
-    const _proyecto = await mapearInput({ ...input });
+    const _proyecto = await { ...input };
     return await Proyecto.findOneAndUpdate({ doc_identificacion }, _proyecto);
   },
-  actualizarproyecto_estado: async ({ estado, input }) => {
-    const _proyecto = await mapearInput({ ...input });
-    return await Proyecto.findOneAndUpdate({ estado }, _proyecto);
+  actualizarproyecto_estado: async ({ _id, input }) => {
+    const _proyecto = await { ...input };
+
+    return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto);
+  },
+
+  actualizarface_proyecto: async ({ _id, input }) => {
+    const _proyecto = await { ...input };
+
+    return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto);
   },
   actualizar_fecha_terminacion: async ({ fecha, input }) => {
-    const _proyecto = await mapearInput({ ...input });
+    const _proyecto = await { ...input };
     return await Proyecto.findOneAndUpdate({ fecha }, _proyecto);
   },
   eliminarproyecto_objetivo_general: async ({ objetivo_general }) => {
-    const _proyecto = await mapearInput({ ...input });
+    const _proyecto = await { ...input };
     return await Proyecto.findOneAndDelete({ objetivo_general }, _proyecto);
   },
   eliminarproyecto_ID: async ({ _id }) => {
