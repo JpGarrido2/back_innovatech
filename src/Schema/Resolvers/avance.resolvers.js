@@ -1,17 +1,17 @@
 const Avance = require("../../model/Avance");
 const descripcion = require("../../model/Avance");
 const mongoose = require("mongoose");
-const {tipo_usuario} = require("../../model/usuario");
+const Inscripcion = require("../../model/inscripcion");
 
 const moment = require("moment");
 moment.locale("en");
 
 const mapearInput = async (input) => {
-  input.id_proyecto = mongoose.Types.ObjectId(input.id_proyecto);
-  input.id_usuario = mongoose.Types.ObjectId(input.id_usuario);
+  input.id_proyecto = (input.id_proyecto);
+  input.id_usuario = (input.id_usuario);
   input.observacion= (input.observacion)
   input.descripcion= (input.descripcion)
-  input.tipo_usuario = "lider";
+
   return input;
 };
 module.exports.resolversAvance = {
@@ -21,6 +21,23 @@ module.exports.resolversAvance = {
     console.log(_avance)
     return await _avance.save();  
   },
+
+  crearAvancePorId_Proyecto: async ({ input }) => { 
+    const idu = input.id_usuario;
+    const idp = input.id_proyecto;
+    const _ins = await Inscripcion.findOne({ id_proyecto: idp, id_usuario: idu});
+    console.log(_ins.estado);
+
+    if(_ins.estado === "Aceptada"){ //falta comprobar si el proyecto esta activo
+      const _avance = new Avance(await mapearInput({ ...input }));
+      return await _avance.save(); 
+    } else {
+      throw new Error("No puede agregar un avance a este proyecto");
+
+    }
+ 
+  },
+
 
   listarAvances: async () => {
     return await Avance.find();
@@ -43,31 +60,53 @@ module.exports.resolversAvance = {
   
   },
 
-  listarAvancesPorTipo_usuario: async ({tipo_usuario})=>{
+  listarAvancesPorTipo_usuario: async ({_id, tipo_usuario})=>{
     if (tipo_usuario=="lider" ){      
-      return await Avance.find();
+      return await Avance.find({_id});
     }else{
       throw new Error("Prohibido. No tiene suficientes permisos.");
     }
   },
 
-  listarAvancesPorTipo_usuario_Estado: async ({_id, tipo_usuario, estado})=>{
-    if (tipo_usuario=="estudiante" && estado=="activo"){
-           
-      return await Avance.find({_id})
-    }else{
-      throw new Error("Prohibido. No tiene suficientes permisos.");
-    }
-  },
-
-
-  agregarDescripcionPorTipo_Usuario_Estado: async ({ _id, estado, tipo_usuario, input }) => {
-    if (estado == "activo" && tipo_usuario == "estudiante") {
-      const _descripcion = await mapearInput({ ...input });
-      return await descripcion.findByIdAndUpdate({ _id }, _descripcion);
-
+  listarAvancesPorTipo_usuario_Estado: async (args) => {
+    const _estado = args.estado;
+    const usuario = args.tipo_usuario;
+    const proyectoId = args.id_proyecto
+    const listAvance = await Avance.find({ estado: _estado, tipo_usuario: usuario, id_proyecto: proyectoId });
+    console.log(listAvance)
+    if (proyectoId) {
+      if (_estado === "activo" && usuario === "estudiante") {
+        return listAvance;
+      } else {
+        throw new Error("Prohibido. No tiene suficientes permisos.");
+      }
     } else {
       throw new Error("Prohibido. No tiene suficientes permisos.");
+    }
+  },
+
+
+  actualizarDescripcionPorTipo_Usuario_Estado: async ({ id_proyecto,  id_usuario, input }) => {
+    if ("estado" in input) {
+      if (id_usuario) {
+        const usuario = await Avance.findById({ _id: id_usuario });
+        const proyect = await Avance.findById({_id:id_proyecto});
+        if (proyect){
+        if (usuario && usuario.tipo_usuario === "estudiante" ) {
+          const _descripcion = await mapearInput({ ...input });
+          return await Avance.findByIdAndUpdate({ id_proyecto }, _descripcion);
+        }
+        } else {
+          throw new Error("Prohibido. No tiene suficientes permisos.");
+        }
+      } else {
+        throw new Error(
+          "Prohibido. No tiene suficientes permisos para modificar el estado."
+        );
+      }
+    } else {
+      const _usuario = await mapearInput({ ...input });
+      return await Avance.findByIdAndUpdate({ id_proyecto }, ndescripcion);
     }
   },
 
