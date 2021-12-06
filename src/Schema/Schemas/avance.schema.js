@@ -7,6 +7,9 @@ module.exports.DEFINICION_AVANCES = `
         descripcion: String!
         observacion:[Observacion]
     }
+    
+ 
+
     type Observacion{
         observacion:String!
         fecha_observacion:Date
@@ -30,6 +33,20 @@ module.exports.DEFINICION_AVANCES = `
         descripcion: String!
         observacion:[ObservacionInput]   
     }
+
+    input AvanceporIdInput {
+        id_proyecto: ID!
+        id_usuario: ID!
+        descripcion: String!
+        fecha_avances: Date
+        observacion:[ObservacionInput]  
+         
+    }
+
+    input ListarAvanceInput{
+        id_proyecto: ID!
+
+    }
  
 `;
 
@@ -37,16 +54,17 @@ module.exports.QUERY_AVANCES = `
     avancePorID(_id: ID!): Avance
     observacion:[Observacion]
     listarAvances: [Avance]
-    listarAvancesPorTipo_usuario(tipo_usuario: String!): [Avance]
-    listarAvancesPorTipo_usuario_Estado(_id: ID, tipo_usuario: String!, estado:String!):[Avance]
+    listarAvancesPorTipo_usuario(id_proyecto:ID!, tipo_usuario:String!, estado:String!): [Avance]
+    listarAvancesPorTipo_usuario_Estado(id_proyecto: ID!, estado:String!, tipo_usuario:String!):[Avance]
    
 `;
 
 module.exports.MUTATIONS_AVANCES = `
     crearAvance(input: AvanceInput): Avance
+    crearAvancePorId_Proyecto(input: AvanceporIdInput): Avance
     eliminarAvancePorID(_id: ID): Avance
     agregarObservacionPorID(_id: ID, tipo_usuario: String!, input:ObservacionInput): Avance
-    agregarDescripcionPorTipo_Usuario_Estado(_id: ID, tipo_usuario: String!, estado: String!, input:DescripcionInput): Avance
+    actualizarDescripcionPorTipo_Usuario_Estado(id_avance:ID, _descripcion:String!, tipo_usuario:String!): Avance
 
 
 `;

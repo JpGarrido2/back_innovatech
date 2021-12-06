@@ -1,17 +1,16 @@
 const Avance = require("../../model/Avance");
-const descripcion = require("../../model/Avance");
 const mongoose = require("mongoose");
-const { tipo_usuario } = require("../../model/usuario");
+const Inscripcion = require("../../model/inscripcion");
 
 const moment = require("moment");
 moment.locale("en");
 
 const mapearInput = async (input) => {
-  input.id_proyecto = mongoose.Types.ObjectId(input.id_proyecto);
-  input.id_usuario = mongoose.Types.ObjectId(input.id_usuario);
-  input.observacion = input.observacion;
-  input.descripcion = input.descripcion;
-  input.tipo_usuario = "lider";
+  input.id_proyecto = (input.id_proyecto);
+  input.id_usuario = (input.id_usuario);
+  input.observacion= (input.observacion)
+  input.descripcion= (input.descripcion)
+
   return input;
 };
 module.exports.resolversAvance = {
@@ -23,9 +22,24 @@ module.exports.resolversAvance = {
     return await _avance.save();
   },
 
-  listarAvances: async (_, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+  crearAvancePorId_Proyecto: async ({ input }) => { 
+    const idu = input.id_usuario;
+    const idp = input.id_proyecto;
+    const _ins = await Inscripcion.findOne({ id_proyecto: idp, id_usuario: idu});
+    console.log(_ins.estado);
+
+    if(_ins.estado === "Aceptada"){ //falta comprobar si el proyecto esta activo
+      const _avance = new Avance(await mapearInput({ ...input }));
+      return await _avance.save(); 
+    } else {
+      throw new Error("No puede agregar un avance a este proyecto");
+
+    }
+ 
+  },
+
+
+  listarAvances: async () => {
     return await Avance.find();
   },
 
@@ -52,43 +66,49 @@ module.exports.resolversAvance = {
     }
   },
 
-  listarAvancesPorTipo_usuario: async ({ tipo_usuario }, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
-    if (tipo_usuario == "lider") {
-      return await Avance.find();
-    } else {
+  listarAvancesPorTipo_usuario: async (args)=>{
+    const usuariolider =args.tipo_usuario;
+    const _id = args.id_proyecto;
+    const _estado= args.estado;
+    if(usuariolider==="lider" && _estado==="activo"){
+      return await Avance.find({  id_proyecto: _id, tipo_usuario:usuariolider, estado:_estado });
+    }
+    else{
       throw new Error("Prohibido. No tiene suficientes permisos.");
     }
+  },
+//Historia de usuario 21
+  listarAvancesPorTipo_usuario_Estado: async (args) => {
+      const _estado= args.estado;
+      const idp=args.id_proyecto;
+      const usuario=args.tipo_usuario;
+        if(usuario==="estudiante"&& _estado==="Aceptada" ){
+          const avance = await Avance.find({id_proyecto:idp, estado: _estado, tipo_usuario:usuario });
+          console.log(avance)
+          return avance;
+        }
+      else{
+          throw new Error("Prohibido. No tiene suficientes permisos.");
+        }
+      
   },
 
-  listarAvancesPorTipo_usuario_Estado: async (
-    { _id, tipo_usuario, estado },
-    context
-  ) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
-    if (tipo_usuario == "estudiante" && estado == "activo") {
-      return await Avance.find({ _id });
-    } else {
-      throw new Error("Prohibido. No tiene suficientes permisos.");
-    }
-  },
+//Historia de usuario 23
+  actualizarDescripcionPorTipo_Usuario_Estado: async (args) => {
+    const idA = args.id_avance;
+    const usuario= args.tipo_usuario;
+    const ds = args._descripcion;
+    const _avance = await Avance.findById(idA)
+    //console.log(_avance);
+    if(_avance && usuario==="estudiante"){
+      return await Avance.findByIdAndUpdate(idA, {descripcion: ds}, { new: true });
 
-  agregarDescripcionPorTipo_Usuario_Estado: async (
-    { _id, estado, tipo_usuario, input },
-    context
-  ) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
-    if (estado == "activo" && tipo_usuario == "estudiante") {
-      const _descripcion = await mapearInput({ ...input });
-      return await descripcion.findByIdAndUpdate({ _id }, _descripcion);
-    } else {
+    }else{
       throw new Error("Prohibido. No tiene suficientes permisos.");
     }
+
   },
-};
+}
 
 // crearObservacion: async ({ input }) => {
 //   const _observacion= new observacion(await mapearInput({ ...input }));
