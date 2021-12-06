@@ -38,6 +38,8 @@ module.exports.DEFINICION_AVANCES = `
         id_proyecto: ID!
         id_usuario: ID!
         descripcion: String!
+        fecha_avances: Date
+        observacion:[ObservacionInput]  
          
     }
 
