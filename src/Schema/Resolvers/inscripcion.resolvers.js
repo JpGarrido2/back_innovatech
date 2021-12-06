@@ -32,91 +32,115 @@ module.exports.resolversInscripcion = {
 },
  */
 
-  crearInscripcion: async ({ input }) => {
+  crearInscripcion: async ({ input }, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const idu = input.id_usuario;
     const idp = input.id_proyecto;
-    const _ins = await Inscripcion.findOne({ id_proyecto: idp, id_usuario: idu});
-    if(!_ins){
-    const _inscripcion = new Inscripcion(await mapearInput({ ...input }));
-    return await _inscripcion.save();
+    const _ins = await Inscripcion.findOne({
+      id_proyecto: idp,
+      id_usuario: idu,
+    });
+    if (!_ins) {
+      const _inscripcion = new Inscripcion(await mapearInput({ ...input }));
+      return await _inscripcion.save();
     } else {
       console.log("Ya esta inscrito");
       return null;
     }
   },
-  inscripcionesPorIDLider: async (args) => {
+  inscripcionesPorIDLider: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const idL = args._idL;
     const idP = args._idP;
     const proyecto = await Proyecto.findById(idP);
     console.log(proyecto.id_usuario);
     console.log(idL);
-    if (proyecto.id_usuario == idL){
-      const inscripciones = await Inscripcion.find({ id_proyecto: idP});
+    if (proyecto.id_usuario == idL) {
+      const inscripciones = await Inscripcion.find({ id_proyecto: idP });
       console.log(inscripciones);
       return inscripciones;
-    } else{
+    } else {
       return null;
     }
-   //let insLider = inscripciones.filter(inscripciones => inscripciones.id_proyecto === _id);
-   
+    //let insLider = inscripciones.filter(inscripciones => inscripciones.id_proyecto === _id);
   },
-  listarInscripciones: async () => {
+  listarInscripciones: async (_, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     return await Inscripcion.find();
   },
-  inscripcionPorID: async (args) => {
+  inscripcionPorID: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _id = args._id;
     return await Inscripcion.findById(_id);
   },
-  inscripcionesPorIDProyecto: async (args) => {
+  inscripcionesPorIDProyecto: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const id = args._id;
     return await Inscripcion.find({ id_proyecto: id });
   },
 
-  inscripcionesPorIDUsuario: async (args) => {
+  inscripcionesPorIDUsuario: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const id = args._id;
     let datos = await Inscripcion.find({ id_usuario: id });
     let resul = { datos: [...datos] };
     console.log(resul.datos);
     return datos;
   },
-  inscripcionPorEstado: async (args) => {
+  inscripcionPorEstado: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _estado = args.estado;
     return await Inscripcion.find({ estado: _estado });
   },
-  inscripcionPorIDUsuarioyEstado: async (args) => {
+  inscripcionPorIDUsuarioyEstado: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _estado = args.estado;
     return await Inscripcion.find({ estado: _estado });
   },
-  inscripcionPorFechaIngreso: async (args) => {
+  inscripcionPorFechaIngreso: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _fecha_ingreso = args.fecha_ingreso;
     console.log(_fecha_ingreso);
     return await Inscripcion.find({ fecha_ingreso: _fecha_ingreso });
   },
-  inscripcionPorFechaEgreso: async (args) => {
+  inscripcionPorFechaEgreso: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _fecha_egreso = args.fecha_egreso;
     return await Inscripcion.find({ fecha_egreso: _fecha_egreso });
   },
 
   //-----------Mutaciones---------------------------------------------------
-  eliminarInscripcionPorID: async ({ _id }) => {
+  eliminarInscripcionPorID: async ({ _id }, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     return await Inscripcion.findByIdAndDelete({ _id });
   },
-  eliminarInscripcionPorEstado: async ({ estado }) => {
+  eliminarInscripcionPorEstado: async ({ estado }, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     //return await Inscripcion.findByIdAndDelete({ estado });
     const eliminado = await Inscripcion.deleteMany({ estado: estado });
     console.log(eliminado.deletedCount);
-    if (eliminado.deletedCount>0){
-
+    if (eliminado.deletedCount > 0) {
       return "Eliminación exitosa";
     } else {
-
       return "No se encontraron inscripciones para eliminar";
     }
-    
   },
-  actualizarEstadoInscripcionPorID: async ({ _id, estado }) => {
+  actualizarEstadoInscripcionPorID: async ({ _id, estado }, context) => {
     //return await Inscripcion.findByIdAndDelete({ estado });
-
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     if (estado == "Aceptada") {
       let now = moment().format("L");
       return await Inscripcion.findByIdAndUpdate(

@@ -48,10 +48,9 @@ const mapearInput = async (input) => {
 
 module.exports.resolversUsuario = {
   //usuarios: async (args, context) => {
-  usuarios: async (args) => {
-    console.log(args);
-    // const { usuarioVerificado } = context;
-    // if (!usuarioVerificado) throw new Error("Prohibido");
+  usuarios: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const usuario = await Usuario.findById(args.id_usuario);
     if (usuario && usuario.tipo_usuario === "administrador") {
       return await Usuario.find();
@@ -61,53 +60,73 @@ module.exports.resolversUsuario = {
       throw new Error("Prohibido. No tiene suficientes permisos.");
     }
   },
-  usuarioPorID: async (args) => {
+  usuarioPorID: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _id = args._id;
 
     return await Usuario.findById(_id);
   },
   usuarioPorNombre: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _nombre_completo = args.nombre_completo;
     return await Usuario.findOne({ nombre_completo: _nombre_completo });
   },
-  usuarioPorIdentificacion: async (args) => {
+  usuarioPorIdentificacion: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _identificacion = args.identificacion;
     return await Usuario.findOne({ identificacion: _identificacion });
   },
-  usuariosPorEstado: async (args) => {
+  usuariosPorEstado: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _estado = args.estado;
     return await Usuario.find({ estado: _estado });
   },
-  usuarioPorEstadoID: async (args) => {
+  usuarioPorEstadoID: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _estado = args.estado;
     const _id = args._id;
     return await Usuario.findOne({ estado: _estado, _id: _id });
   },
-  usuariosPorTipo: async (args) => {
+  usuariosPorTipo: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _tipo_usuario = args.tipo_usuario;
     return await Usuario.find({ tipo_usuario: _tipo_usuario });
   },
-  usuariosPorTipoID: async (args) => {
+  usuariosPorTipoID: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _tipo_usuario = args.tipo_usuario;
     const _id = args._id;
     return await Usuario.findOne({ tipo_usuario: _tipo_usuario, _id: _id });
   },
-  usuarioPorEmail: async (args) => {
+  usuarioPorEmail: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _email = args.email;
     return await Usuario.findOne({ email: _email });
   },
-  usuariosPorFechaIngreso: async (args) => {
+  usuariosPorFechaIngreso: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     args = mapearArgs(args);
     console.log(args);
     const _fecha_ingreso = args.fecha_ingreso;
     return await Usuario.find({ fecha_ingreso: _fecha_ingreso });
   },
-  usuariosPorFechaEgreso: async (args) => {
+  usuariosPorFechaEgreso: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     args = mapearArgs(args);
     const _fecha_egreso = args.fecha_egreso;
     return await Usuario.find({ fecha_egreso: _fecha_egreso });
   },
-  login: async (args, request) => {
+  login: async (args) => {
     const _email = args.email;
     const _password = args.password;
     const usuario = await Usuario.findOne({ email: _email });
@@ -132,11 +151,15 @@ module.exports.resolversUsuario = {
   logout: async () => {
     return false;
   },
-  crearUsuario: async ({ input }) => {
+  crearUsuario: async ({ input }, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _usuario = new Usuario(await mapearInput({ ...input }));
     return await _usuario.save();
   },
-  actualizarUsuarioPorID: async ({ _id, id_usuario, input }) => {
+  actualizarUsuarioPorID: async ({ _id, id_usuario, input }, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     if ("estado" in input) {
       if (id_usuario) {
         const usuario = await Usuario.findById({ _id: id_usuario });
@@ -160,21 +183,34 @@ module.exports.resolversUsuario = {
       return await Usuario.findByIdAndUpdate({ _id }, _usuario);
     }
   },
-  actualizarUsuarioPorIdentificacion: async ({ identificacion, input }) => {
+  actualizarUsuarioPorIdentificacion: async (
+    { identificacion, input },
+    context
+  ) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _usuario = await mapearInput({ ...input });
     return await Usuario.findOneAndUpdate({ identificacion }, _usuario);
   },
-  actualizarUsuarioPorEmail: async ({ email, input }) => {
+  actualizarUsuarioPorEmail: async ({ email, input }, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _usuario = await mapearInput({ ...input });
     return await Usuario.findOneAndUpdate({ email }, _usuario);
   },
-  eliminarUsuarioPorID: async ({ _id }) => {
+  eliminarUsuarioPorID: async ({ _id }, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     return await Usuario.findByIdAndDelete({ _id });
   },
-  eliminarUsuarioPorIdentificacion: async ({ identificacion }) => {
+  eliminarUsuarioPorIdentificacion: async ({ identificacion }, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     return await Usuario.findOneAndDelete({ identificacion });
   },
-  eliminarUsuarioPorEmail: async ({ email }) => {
+  eliminarUsuarioPorEmail: async ({ email }, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     return await Usuario.findOneAndDelete({ email });
   },
 };
