@@ -1,5 +1,4 @@
 const Avance = require("../../model/Avance");
-const descripcion = require("../../model/Avance");
 const mongoose = require("mongoose");
 const Inscripcion = require("../../model/inscripcion");
 
@@ -60,58 +59,48 @@ module.exports.resolversAvance = {
   
   },
 
-  listarAvancesPorTipo_usuario: async ({_id, tipo_usuario})=>{
-    if (tipo_usuario=="lider" ){      
-      return await Avance.find({_id});
+  listarAvancesPorTipo_usuario: async (args)=>{
+    const usuariolider =args.tipo_usuario;
+    const _id = args.id_proyecto;
+    const _estado= args.estado;
+    if(usuariolider==="lider" && _estado==="activo"){
+      return await Avance.find({  id_proyecto: _id, tipo_usuario:usuariolider, estado:_estado });
+    }
+    else{
+      throw new Error("Prohibido. No tiene suficientes permisos.");
+    }
+  },
+//Historia de usuario 21
+  listarAvancesPorTipo_usuario_Estado: async (args) => {
+      const _estado= args.estado;
+      const idp=args.id_proyecto;
+      const usuario=args.tipo_usuario;
+        if(usuario==="estudiante"&& _estado==="Aceptada" ){
+          const avance = await Avance.find({id_proyecto:idp, estado: _estado, tipo_usuario:usuario });
+          console.log(avance)
+          return avance;
+        }
+      else{
+          throw new Error("Prohibido. No tiene suficientes permisos.");
+        }
+      
+  },
+
+//Historia de usuario 23
+  actualizarDescripcionPorTipo_Usuario_Estado: async (args) => {
+    const idA = args.id_avance;
+    const usuario= args.tipo_usuario;
+    const ds = args._descripcion;
+    const _avance = await Avance.findById(idA)
+    //console.log(_avance);
+    if(_avance && usuario==="estudiante"){
+      return await Avance.findByIdAndUpdate(idA, {descripcion: ds}, { new: true });
+
     }else{
       throw new Error("Prohibido. No tiene suficientes permisos.");
     }
+
   },
-
-  listarAvancesPorTipo_usuario_Estado: async (args) => {
-    const _estado = args.estado;
-    const usuario = args.tipo_usuario;
-    const proyectoId = args.id_proyecto
-    const listAvance = await Avance.find({ estado: _estado, tipo_usuario: usuario, id_proyecto: proyectoId });
-    console.log(listAvance)
-    if (proyectoId) {
-      if (_estado === "activo" && usuario === "estudiante") {
-        return listAvance;
-      } else {
-        throw new Error("Prohibido. No tiene suficientes permisos.");
-      }
-    } else {
-      throw new Error("Prohibido. No tiene suficientes permisos.");
-    }
-  },
-
-
-  actualizarDescripcionPorTipo_Usuario_Estado: async ({ id_proyecto,  id_usuario, input }) => {
-    if ("estado" in input) {
-      if (id_usuario) {
-        const usuario = await Avance.findById({ _id: id_usuario });
-        const proyect = await Avance.findById({_id:id_proyecto});
-        if (proyect){
-        if (usuario && usuario.tipo_usuario === "estudiante" ) {
-          const _descripcion = await mapearInput({ ...input });
-          return await Avance.findByIdAndUpdate({ id_proyecto }, _descripcion);
-        }
-        } else {
-          throw new Error("Prohibido. No tiene suficientes permisos.");
-        }
-      } else {
-        throw new Error(
-          "Prohibido. No tiene suficientes permisos para modificar el estado."
-        );
-      }
-    } else {
-      const _usuario = await mapearInput({ ...input });
-      return await Avance.findByIdAndUpdate({ id_proyecto }, ndescripcion);
-    }
-  },
-
-
-   
 }
 
 // crearObservacion: async ({ input }) => {
