@@ -5,52 +5,41 @@ const JWT_SECRET = process.env.TOKEN_SECRET;
 const moment = require("moment");
 moment.locale("en");
 
-const mapearArgs = (args) => {
-  if (args?.fecha_egreso) {
-    args = {
-      ...args,
-      fecha_egreso: new Date(
-        moment(args.fecha_egreso, "DD/MM/YYYY").format("L")
-      ).toISOString(),
-    };
-  }
-  if (args?.fecha_ingreso) {
-    args = {
-      ...args,
-      fecha_ingreso: new Date(
-        moment(args.fecha_ingreso, "DD/MM/YYYY").format("L")
-      ).toISOString(),
-    };
-  }
-  return args;
-};
 const mapearInput = async (input) => {
-  if (input?.password) {
-    const salt = await bcrypt.genSalt(10);
-    const passwordCrypt = await bcrypt.hash(input.password, salt);
-    input = { ...input, password: passwordCrypt };
-  }
-  if (input?.fecha_egreso) {
-    input = {
-      ...input,
-      fecha_egreso: moment(input.fecha_egreso, "DD/MM/YYYY").format("L"),
-    };
+  try {
+    if (input?.password) {
+      const salt = await bcrypt.genSalt(10);
+      const passwordCrypt = await bcrypt.hash(input.password, salt);
+      input = { ...input, password: passwordCrypt };
+    }
+    if (input?.fecha_egreso) {
+      input = {
+        ...input,
+        fecha_egreso: moment(input.fecha_egreso, moment.ISO_8601).isValid()
+          ? moment(input.fecha_egreso, moment.ISO_8601).format("L")
+          : moment(input.fecha_egreso, "YYYY-MM-DD").format("L"),
+      };
+    }
+    if (input?.fecha_ingreso) {
+      input = {
+        ...input,
+        fecha_ingreso: moment(input.fecha_ingreso, moment.ISO_8601).isValid()
+          ? moment(input.fecha_ingreso, moment.ISO_8601).format("L")
+          : moment(input.fecha_ingreso, "YYYY-MM-DD").format("L"),
+      };
+    }
     console.log(input);
+    return input;
+  } catch (error) {
+    console.log(error);
   }
-  if (input?.fecha_ingreso) {
-    input = {
-      ...input,
-      fecha_ingreso: moment(input.fecha_ingreso, "DD/MM/YYYY").format("L"),
-    };
-  }
-  return input;
 };
 
 module.exports.resolversUsuario = {
   //usuarios: async (args, context) => {
   usuarios: async (args, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    if (usuarioVerificado) throw new Error("Prohibido");
     const usuario = await Usuario.findById(args.id_usuario);
     if (usuario && usuario.tipo_usuario === "administrador") {
       return await Usuario.find();
@@ -152,10 +141,15 @@ module.exports.resolversUsuario = {
     return false;
   },
   crearUsuario: async ({ input }, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
-    const _usuario = new Usuario(await mapearInput({ ...input }));
-    return await _usuario.save();
+    try {
+      const { usuarioVerificado } = context;
+      if (usuarioVerificado) throw new Error("Prohibido");
+      const _usuario = new Usuario(await mapearInput({ ...input }));
+      console.log(_usuario);
+      return await _usuario.save();
+    } catch (error) {
+      console.log(error);
+    }
   },
   actualizarUsuarioPorID: async ({ _id, id_usuario, input }, context) => {
     const { usuarioVerificado } = context;
