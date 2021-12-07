@@ -5,8 +5,8 @@ const { Schema } = mongoose;
 const ProyectoSchema = new Schema({
   nombre_proyecto: { type: String, required: true },
   presupuesto: { type: Number, required: true },
-  estado: { type: String, required: true },
-  fecha_inicio: { type: Date, required: true },
+  estado: { type: String, required: false },
+  fecha_inicio: { type: Date, required: false },
   fecha_terminacion: { type: Date, },
   face_proyecto: { type: String,  },
   objetivo_general: { type: String, required: true },

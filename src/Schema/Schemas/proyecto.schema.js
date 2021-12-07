@@ -41,15 +41,15 @@ module.exports.DEFINICION_PROYECTOS = `
         fecha_creacion:Date
     }
     input ProyectoInput {
-        nombre_proyecto: String!
-        presupuesto: Int!
-        estado: String!
-        fecha_inicio: Date!
+        nombre_proyecto: String
+        presupuesto: Int
+        estado: String
+        fecha_inicio: Date
         fecha_terminacion: Date
         face_proyecto: String
-        objetivo_general: String!
-        objetivo_especifico: [ObjetivoInput]
-        id_usuario: String!
+        objetivo_general: String
+        objetivo_especifico: [ObjetivoInput!]!
+        id_usuario: String
     }
 
 
