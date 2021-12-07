@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const { Schema } = mongoose;
 const Autor = mongoose.model("Usuario");
 
@@ -14,4 +13,4 @@ const LoginSchema = new Schema({
   estado: {},
   fase_proyecto: {},
 });
-module.exports = mongoose.model("Proyecto", ProyectoSchema, "proyecto");
+module.exports = mongoose.model("Login", LoginSchema, "login");
