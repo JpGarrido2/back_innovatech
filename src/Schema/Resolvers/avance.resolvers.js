@@ -15,8 +15,8 @@ const mapearInput = async (input) => {
 };
 module.exports.resolversAvance = {
   crearAvance: async ({ input }, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    // const { usuarioVerificado } = context;
+    // if (!usuarioVerificado) throw new Error("Prohibido");
     const _avance = new Avance(await mapearInput({ ...input }));
     console.log(_avance);
     return await _avance.save();
@@ -43,9 +43,15 @@ module.exports.resolversAvance = {
   },
 
   listarAvances: async (_, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
-    return await Avance.find();
+    // const { usuarioVerificado } = context;
+    // if (!usuarioVerificado) throw new Error("Prohibido");
+
+    let datos = await Avance.find().lean().populate({
+      path: "id_proyecto",
+      select: "_id nombre_proyecto objetivo_general",
+    });
+    console.log(...datos);
+    return datos;
   },
 
   eliminarAvancePorID: async ({ _id }, context) => {

@@ -111,8 +111,8 @@ module.exports.resolversProyecto = {
   },
 
   crearProyecto: async ({ input }, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    // const { usuarioVerificado } = context;
+    // if (!usuarioVerificado) throw new Error("Prohibido");
 
     const _proyecto = new Proyecto(
       await mapearInput({ ...input, estado: "inactivo", fecha_inicio: null, fecha_terminacion:null, fase_proyecto:null })
