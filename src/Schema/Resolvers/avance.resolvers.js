@@ -6,10 +6,10 @@ const moment = require("moment");
 moment.locale("en");
 
 const mapearInput = async (input) => {
-  input.id_proyecto = input.id_proyecto;
-  input.id_usuario = input.id_usuario;
-  input.observacion = input.observacion;
-  input.descripcion = input.descripcion;
+  if (input?.id_proyecto) input.id_proyecto = input.id_proyecto;
+  if (input?.id_usuario) input.id_usuario = input.id_usuario;
+  if (input?.observacion) input.observacion = input.observacion;
+  if (input?.descripcion) input.descripcion = input.descripcion;
 
   return input;
 };
