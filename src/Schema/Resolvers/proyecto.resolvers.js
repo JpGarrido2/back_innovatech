@@ -115,7 +115,7 @@ module.exports.resolversProyecto = {
     if (!usuarioVerificado) throw new Error("Prohibido");
 
     const _proyecto = new Proyecto(
-      await mapearInput({ ...input, estado: "inactivo", fecha_inicio: null, fecha_terminacion:null })
+      await mapearInput({ ...input, estado: "inactivo", fecha_inicio: null, fecha_terminacion:null, fase_proyecto:null })
     );
     return await _proyecto.save();
   },
@@ -154,10 +154,13 @@ module.exports.resolversProyecto = {
      if (!usuarioVerificado) throw new Error("Prohibido");
     let fecha_actual = moment().format("MM-DD-YYYY");
     const _proyecto = await { ...input, fecha_terminacion: fecha_actual };
-    l;
+    const _proyecto1 = await { ...input};
+    
     let estado = input.estado;
     if (estado == "inactivo") {
       return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto);
+    }else{
+       return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto1);
     }
   },
 
@@ -165,11 +168,13 @@ module.exports.resolversProyecto = {
      const { usuarioVerificado } = context;
      if (!usuarioVerificado) throw new Error("Prohibido");
     let fase_proyecto = input.face_proyecto;
+     const _proyecto1 = await { ...input };
     console.log(fase_proyecto);
     if (fase_proyecto == "terminado") {
       const _proyecto = await { ...input, estado: "inactivo" };
       return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto);
     }
+    return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto1);
   },
   actualizar_fecha_terminacion: async ({ fecha, input },context) => {
      const { usuarioVerificado } = context;
