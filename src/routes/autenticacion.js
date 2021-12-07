@@ -1,7 +1,45 @@
-const JWT_SECRET = process.env.jwt || "InnovaTech";
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = process.env.TOKEN_SECRET;
 
-exports.verificarTokenUsuario = (req, res, next) => {
+const obtenerTokenPayload = (token, JWT_SECRET) => {
+  return jwt.verify(token, JWT_SECRET);
+};
+
+const validarUsuarioGHQL = (req, res, next) => {
+  if (req.headers.authorization) {
+    console.log(req.UsuarioVerificado);
+  }
+  next();
+};
+
+const obtenerUsuarioVerificado = (req, authToken = "") => {
+  try {
+    if (req) {
+      const authHeader = req.headers.authorization;
+      if (authHeader) {
+        const token = authHeader.replace("Bearer ", "");
+        if (!token) {
+          //throw new Error("No token found");
+          return null;
+        }
+        const usuarioVerificado = obtenerTokenPayload(token, JWT_SECRET);
+        return usuarioVerificado;
+      }
+    } else if (authToken) {
+      const usuarioVerificado = obtenerTokenPayload(authToken, JWT_SECRET);
+      return usuarioVerificado;
+    }
+    return null;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+  //throw new Error("Sin autenticación.");
+};
+
+const verificarTokenUsuario = (req, res, next) => {
   let token = req.headers.authorization;
+
   if (!token)
     return res
       .status(401)
@@ -13,13 +51,14 @@ exports.verificarTokenUsuario = (req, res, next) => {
     if (token === "null" || !token)
       return res.status(401).send({ estado: "Petición No Autorizada." });
 
-    let usuarioVerificado = jwt.verify(token, config.JWT_SECRET);
+    let usuarioVerificado = obtenerTokenPayload(token);
     if (!usuarioVerificado)
       return res.status(401).send({ estado: "Petición No autorizada." });
 
-    req.user = usuarioVerificado;
+    req.usuario = usuarioVerificado;
     next();
   } catch (error) {
+    console.log(error);
     res.status(400).send({ estado: "Token Invalido" });
   }
 };
@@ -36,3 +75,9 @@ exports.verificarTokenUsuario = (req, res, next) => {
 //   }
 //   return res.status(401).send("Unauthorized!");
 // };
+
+module.exports = {
+  obtenerUsuarioVerificado,
+  verificarTokenUsuario,
+  validarUsuarioGHQL,
+};
