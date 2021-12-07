@@ -1,13 +1,19 @@
 module.exports.DEFINICION_AVANCES = `
     type Avance {
         _id: ID!
-        id_proyecto: ID!
+        id_proyecto: [AvanceProyecto]
         id_usuario: ID!
         fecha_avances: Date
         descripcion: String!
         observacion:[Observacion]
     }
     
+    type AvanceProyecto{
+        _id: ID
+        nombre_proyecto:String
+        objetivo_general: String
+
+    }
  
 
     type Observacion{
@@ -29,6 +35,8 @@ module.exports.DEFINICION_AVANCES = `
     } 
 
     input AvanceInput {
+        id_proyecto: ID!
+        id_usuario: ID!
         fecha_avances: Date
         descripcion: String!
         observacion:[ObservacionInput]   
@@ -53,7 +61,7 @@ module.exports.DEFINICION_AVANCES = `
 module.exports.QUERY_AVANCES = `
     avancePorID(_id: ID!): Avance
     observacion:[Observacion]
-    listarAvances: [Avance]
+    listarAvances:[Avance]
     listarAvancesPorTipo_usuario(id_proyecto:ID!, tipo_usuario:String!, estado:String!): [Avance]
     listarAvancesPorTipo_usuario_Estado(id_proyecto: ID!, estado:String!, tipo_usuario:String!):[Avance]
    
