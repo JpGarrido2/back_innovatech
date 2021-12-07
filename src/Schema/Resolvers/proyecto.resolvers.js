@@ -186,6 +186,6 @@ module.exports.resolversProyecto = {
   eliminarproyecto_ID: async ({ _id },context) => {
      const { usuarioVerificado } = context;
      if (!usuarioVerificado) throw new Error("Prohibido");
-    return await Usuario.findByIdAndDelete({ _id });
+git    return await Usuario.findByIdAndDelete({ _id });
   },
 };
