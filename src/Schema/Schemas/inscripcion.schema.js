@@ -22,7 +22,7 @@ module.exports.QUERY_INSCRIPCIONES = `
     inscripcionesPorIDLider(_idL: ID!, _idP: ID!): [Inscripcion]
     listarInscripciones: [Inscripcion]
     inscripcionPorID(_id: ID!): Inscripcion
-    inscripcionesPorIDProyecto(_id: ID!): [Inscripcion]
+    inscripcionesPorIDProyecto: [Inscripcion]
     inscripcionesPorIDUsuario(_id: ID!): [Inscripcion]
     inscripcionPorIDUsuarioyEstado(_id: ID!, estado: String!): [Inscripcion]
     inscripcionPorEstado(estado: String!) : [Inscripcion]
