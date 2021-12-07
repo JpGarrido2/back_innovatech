@@ -60,7 +60,7 @@ module.exports.QUERY_AVANCES = `
 `;
 
 module.exports.MUTATIONS_AVANCES = `
-    crearAvance(input: AvanceInput): Avance
+    crearAvance(input:AvanceInput): Avance
     crearAvancePorId_Proyecto(input: AvanceporIdInput): Avance
     eliminarAvancePorID(_id: ID): Avance
     agregarObservacionPorID(_id: ID, tipo_usuario: String!, input:ObservacionInput): Avance

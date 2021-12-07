@@ -14,6 +14,7 @@ const mapearInput = async (input) => {
   return input;
 };
 module.exports.resolversAvance = {
+//<<<<<<< Updated upstream
   crearAvance: async ({ input }, context) => {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
@@ -25,6 +26,17 @@ module.exports.resolversAvance = {
   crearAvancePorId_Proyecto: async ({ input }, context) => {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
+  },
+
+  crearAvance: async ({ input }) => {
+      const _avance = new Avance(await mapearInput({ ...input }));
+    console.log(_avance)
+    return await _avance.save(); 
+ 
+  },
+//Historia de usuario 22
+  crearAvancePorId_Proyecto: async ({ input }) => { 
+//>>>>>>> Stashed changes
     const idu = input.id_usuario;
     const idp = input.id_proyecto;
     const _ins = await Inscripcion.findOne({
