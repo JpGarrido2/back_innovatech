@@ -1,8 +1,7 @@
 const Avance = require("../../model/Avance");
-const mongoose = require("mongoose");
 const Inscripcion = require("../../model/inscripcion");
-
 const moment = require("moment");
+
 moment.locale("en");
 
 const mapearInput = async (input) => {
@@ -15,30 +14,17 @@ const mapearInput = async (input) => {
 };
 module.exports.resolversAvance = {
 //<<<<<<< Updated upstream
-  crearAvance: async ({ input }, context) => {
-<<<<<<< HEAD
-    //const { usuarioVerificado } = context;
-    //if (!usuarioVerificado) throw new Error("Prohibido");
-=======
-    // const { usuarioVerificado } = context;
-    // if (!usuarioVerificado) throw new Error("Prohibido");
->>>>>>> development
-    const _avance = new Avance(await mapearInput({ ...input }));
-    console.log(_avance);
+  crearAvance: async ({  input }, context) => {
+     const { usuarioVerificado } = context;
+     if (!usuarioVerificado) throw new Error("Prohibido");
+     const idu = input.id_usuario;
+     const _avance = new Avance(
+      await mapearInput({ ...input , id_usuario:idu})
+    );
     return await _avance.save();
   },
 
-  crearAvancePorId_Proyecto: async ({ input }, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
-  },
 
-  crearAvance: async ({ input }) => {
-    const _avance = new Avance(await mapearInput({ ...input }));
-    console.log(_avance)
-    return await _avance.save(); 
- 
-  },
 //Historia de usuario 22
   crearAvancePorId_Proyecto: async ({ input }) => { 
 //>>>>>>> Stashed changes
@@ -60,13 +46,8 @@ module.exports.resolversAvance = {
   },
 
   listarAvances: async (_, context) => {
-<<<<<<< HEAD
-    //const { usuarioVerificado } = context;
-    //if (!usuarioVerificado) throw new Error("Prohibido");
-    return await Avance.find();
-=======
-    // const { usuarioVerificado } = context;
-    // if (!usuarioVerificado) throw new Error("Prohibido");
+    const { usuarioVerificado } = context;
+     if (!usuarioVerificado) throw new Error("Prohibido");
 
     let datos = await Avance.find().lean().populate({
       path: "id_proyecto",
@@ -74,7 +55,6 @@ module.exports.resolversAvance = {
     });
     console.log(...datos);
     return datos;
->>>>>>> development
   },
 
   eliminarAvancePorID: async ({ _id }, context) => {
@@ -82,7 +62,7 @@ module.exports.resolversAvance = {
     if (!usuarioVerificado) throw new Error("Prohibido");
     return await Avance.findByIdAndDelete({ _id });
   },
-
+///Historia de Usuario 18
   agregarObservacionPorID: async ({ _id, tipo_usuario, input }, context) => {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
@@ -99,7 +79,7 @@ module.exports.resolversAvance = {
       throw new Error("Prohibido. No tiene suficientes permisos.");
     }
   },
-
+//historia de usuario 18 listar avances como Lider
   listarAvancesPorTipo_usuario: async (args, context) => {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
@@ -116,7 +96,7 @@ module.exports.resolversAvance = {
       throw new Error("Prohibido. No tiene suficientes permisos.");
     }
   },
-  //Historia de usuario 21
+  //Historia de usuario 21 listar avances como estudiante
   listarAvancesPorTipo_usuario_Estado: async (args, context) => {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
@@ -145,7 +125,7 @@ module.exports.resolversAvance = {
     const ds = args._descripcion;
     const _avance = await Avance.findById(idA);
     //console.log(_avance);
-    if (_avance && usuario === "estudiante") {
+    if ( usuario === "estudiante") {
       return await Avance.findByIdAndUpdate(
         idA,
         { descripcion: ds },
@@ -156,27 +136,3 @@ module.exports.resolversAvance = {
     }
   },
 };
-
-// crearObservacion: async ({ input }) => {
-//   const _observacion= new observacion(await mapearInput({ ...input }));
-//   return await _observacion.save();
-// },
-
-// crearDescripcion: async ({ input }) => {
-//   const _descripcion= new descripcion(await mapearInput({ ...input }));
-//   return await _descripcion.save();
-// },
-
-// listarAvancesPor_Tipo_Usuario: async ({ _id, tipo_usuario }) => {
-//   if (tipo_usuario == "lider") {
-//     const _avance = await Avance.findById({ _id })
-//     return await _avance.find({ _avance});
-//   }else{
-//     return "No autorizado";
-//   }
-
-// },
-// avancesPorID: async (args) => {
-//   const _id = args._id;
-//   return await Avance.findById(_id);
-// },
