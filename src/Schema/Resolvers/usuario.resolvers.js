@@ -152,29 +152,33 @@ module.exports.resolversUsuario = {
     }
   },
   actualizarUsuarioPorID: async ({ _id, id_usuario, input }, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
-    if ("estado" in input) {
-      if (id_usuario) {
-        const usuario = await Usuario.findById({ _id: id_usuario });
-        if (
-          usuario &&
-          (usuario.tipo_usuario === "administrador" ||
-            usuario.tipo_usuario === "líder")
-        ) {
-          const _usuario = await mapearInput({ ...input });
-          return await Usuario.findByIdAndUpdate({ _id }, _usuario);
+    try {
+      const { usuarioVerificado } = context;
+      if (usuarioVerificado) throw new Error("Prohibido");
+      if ("estado" in input) {
+        if (id_usuario) {
+          const usuario = await Usuario.findById({ _id: id_usuario });
+          if (
+            usuario &&
+            (usuario.tipo_usuario === "administrador" ||
+              usuario.tipo_usuario === "líder")
+          ) {
+            const _usuario = await mapearInput({ ...input });
+            return await Usuario.findByIdAndUpdate({ _id }, _usuario);
+          } else {
+            throw new Error("Prohibido. No tiene suficientes permisos.");
+          }
         } else {
-          throw new Error("Prohibido. No tiene suficientes permisos.");
+          throw new Error(
+            "Prohibido. No tiene suficientes permisos para modificar el estado."
+          );
         }
       } else {
-        throw new Error(
-          "Prohibido. No tiene suficientes permisos para modificar el estado."
-        );
+        const _usuario = await mapearInput({ ...input });
+        return await Usuario.findByIdAndUpdate({ _id }, _usuario);
       }
-    } else {
-      const _usuario = await mapearInput({ ...input });
-      return await Usuario.findByIdAndUpdate({ _id }, _usuario);
+    } catch (error) {
+      console.log(error);
     }
   },
   actualizarUsuarioPorIdentificacion: async (

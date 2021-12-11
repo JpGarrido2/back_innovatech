@@ -168,7 +168,10 @@ module.exports.resolversProyecto = {
     let estado = input.estado;
     if (estado == "inactivo") {
       let respuesta1 = await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto);
-      let respuesta2 = await Inscripcion.updateMany({id_proyecto: _id},{fecha_egreso: fecha_actual})
+      let respuesta2 = await Inscripcion.updateMany(
+        { id_proyecto: _id },
+        { fecha_egreso: fecha_actual }
+      );
     } else {
       return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto1);
     }
@@ -198,16 +201,9 @@ module.exports.resolversProyecto = {
     const _proyecto = await { ...input };
     return await Proyecto.findOneAndDelete({ objetivo_general }, _proyecto);
   },
-<<<<<<< HEAD
-  eliminarproyecto_ID: async ({ _id },context) => {
-     const { usuarioVerificado } = context;
-     if (!usuarioVerificado) throw new Error("Prohibido");
-git    return await Usuario.findByIdAndDelete({ _id });
-=======
   eliminarproyecto_ID: async ({ _id }, context) => {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
     return await Usuario.findByIdAndDelete({ _id });
->>>>>>> development
   },
 };
