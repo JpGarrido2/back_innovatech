@@ -13,14 +13,12 @@ const mapearInput = async (input) => {
   return input;
 };
 module.exports.resolversAvance = {
-//<<<<<<< Updated upstream
-  crearAvance: async ({  input }, context) => {
-     const { usuarioVerificado } = context;
-     if (!usuarioVerificado) throw new Error("Prohibido");
-     const idu = input.id_usuario;
-     const _avance = new Avance(
-      await mapearInput({ ...input , id_usuario:idu})
-    );
+  crearAvance: async ({ input }, context) => {
+    
+    // const { usuarioVerificado } = context;
+    // if (!usuarioVerificado) throw new Error("Prohibido");
+    const _avance = new Avance(await mapearInput({ ...input }));
+    console.log(_avance);
     return await _avance.save();
   },
 
