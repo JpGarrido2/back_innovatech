@@ -168,7 +168,10 @@ module.exports.resolversProyecto = {
     let estado = input.estado;
     if (estado == "inactivo") {
       let respuesta1 = await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto);
-      let respuesta2 = await Inscripcion.updateMany({id_proyecto: _id},{fecha_egreso: fecha_actual})
+      let respuesta2 = await Inscripcion.updateMany(
+        { id_proyecto: _id },
+        { fecha_egreso: fecha_actual }
+      );
     } else {
       return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto1);
     }
