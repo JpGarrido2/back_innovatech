@@ -198,7 +198,7 @@ module.exports.resolversUsuario = {
   },
   eliminarUsuarioPorID: async ({ _id }, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    if (usuarioVerificado) throw new Error("Prohibido");
     return await Usuario.findByIdAndDelete({ _id });
   },
   eliminarUsuarioPorIdentificacion: async ({ identificacion }, context) => {
