@@ -3,27 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.TOKEN_SECRET;
 const moment = require("moment");
-moment.locale("en");
 
-const mapearArgs = (args) => {
-  if (args?.fecha_egreso) {
-    args = {
-      ...args,
-      fecha_egreso: new Date(
-        moment(args.fecha_egreso, "DD/MM/YYYY").format("L")
-      ).toISOString(),
-    };
-  }
-  if (args?.fecha_ingreso) {
-    args = {
-      ...args,
-      fecha_ingreso: new Date(
-        moment(args.fecha_ingreso, "DD/MM/YYYY").format("L")
-      ).toISOString(),
-    };
-  }
-  return args;
-};
 const mapearInput = async (input) => {
   if (input?.password) {
     const salt = await bcrypt.genSalt(10);
@@ -31,18 +11,24 @@ const mapearInput = async (input) => {
     input = { ...input, password: passwordCrypt };
   }
   if (input?.fecha_egreso) {
+    moment.locale("en");
     input = {
       ...input,
-      fecha_egreso: moment(input.fecha_egreso, "DD/MM/YYYY").format("L"),
+      fecha_egreso: moment(input.fecha_egreso, moment.ISO_8601).isValid()
+        ? moment(input.fecha_egreso, moment.ISO_8601).format("L")
+        : moment(input.fecha_egreso, "YYYY-MM-DD").format("L"),
     };
-    console.log(input);
   }
   if (input?.fecha_ingreso) {
+    moment.locale("en");
     input = {
       ...input,
-      fecha_ingreso: moment(input.fecha_ingreso, "DD/MM/YYYY").format("L"),
+      fecha_ingreso: moment(input.fecha_ingreso, moment.ISO_8601).isValid()
+        ? moment(input.fecha_ingreso, moment.ISO_8601).format("L")
+        : moment(input.fecha_ingreso, "YYYY-MM-DD").format("L"),
     };
   }
+  console.log(input);
   return input;
 };
 
@@ -50,7 +36,7 @@ module.exports.resolversUsuario = {
   //usuarios: async (args, context) => {
   usuarios: async (args, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    if (usuarioVerificado) throw new Error("Prohibido");
     const usuario = await Usuario.findById(args.id_usuario);
     if (usuario && usuario.tipo_usuario === "administrador") {
       return await Usuario.find();
@@ -62,14 +48,14 @@ module.exports.resolversUsuario = {
   },
   usuarioPorID: async (args, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    if (usuarioVerificado) throw new Error("Prohibido");
     const _id = args._id;
 
     return await Usuario.findById(_id);
   },
   usuarioPorNombre: async (args, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    if (usuarioVerificado) throw new Error("Prohibido");
     const _nombre_completo = args.nombre_completo;
     return await Usuario.findOne({ nombre_completo: _nombre_completo });
   },
@@ -151,15 +137,43 @@ module.exports.resolversUsuario = {
   logout: async () => {
     return false;
   },
-  crearUsuario: async ({ input }, context) => {
+  crearUsuario: async ({ input, id_usuario }, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
-    const _usuario = new Usuario(await mapearInput({ ...input }));
-    return await _usuario.save();
+    if (usuarioVerificado) throw new Error("Prohibido");
+    try {
+      if (
+        "estado" in input &&
+        (input["estado"] === "autorizado" ||
+          input["estado"] === "no autorizado")
+      ) {
+        if (id_usuario) {
+          const usuario = await Usuario.findById({ _id: id_usuario });
+          if (
+            usuario &&
+            (usuario.tipo_usuario === "administrador" ||
+              usuario.tipo_usuario === "líder")
+          ) {
+            const _usuario = new Usuario(await mapearInput({ ...input }));
+            return await _usuario.save();
+          } else {
+            throw new Error("Prohibido. No tiene suficientes permisos.");
+          }
+        } else {
+          throw new Error(
+            "Prohibido. No tiene suficientes permisos para modificar el estado."
+          );
+        }
+      } else {
+        const _usuario = new Usuario(await mapearInput({ ...input }));
+        return await _usuario.save();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   },
   actualizarUsuarioPorID: async ({ _id, id_usuario, input }, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    if (usuarioVerificado) throw new Error("Prohibido");
     if ("estado" in input) {
       if (id_usuario) {
         const usuario = await Usuario.findById({ _id: id_usuario });
@@ -200,7 +214,7 @@ module.exports.resolversUsuario = {
   },
   eliminarUsuarioPorID: async ({ _id }, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    if (usuarioVerificado) throw new Error("Prohibido");
     return await Usuario.findByIdAndDelete({ _id });
   },
   eliminarUsuarioPorIdentificacion: async ({ identificacion }, context) => {
