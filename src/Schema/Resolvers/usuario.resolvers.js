@@ -3,27 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.TOKEN_SECRET;
 const moment = require("moment");
-moment.locale("en");
 
-const mapearArgs = (args) => {
-  if (args?.fecha_egreso) {
-    args = {
-      ...args,
-      fecha_egreso: new Date(
-        moment(args.fecha_egreso, "DD/MM/YYYY").format("L")
-      ).toISOString(),
-    };
-  }
-  if (args?.fecha_ingreso) {
-    args = {
-      ...args,
-      fecha_ingreso: new Date(
-        moment(args.fecha_ingreso, "DD/MM/YYYY").format("L")
-      ).toISOString(),
-    };
-  }
-  return args;
-};
 const mapearInput = async (input) => {
   if (input?.password) {
     const salt = await bcrypt.genSalt(10);
@@ -31,16 +11,22 @@ const mapearInput = async (input) => {
     input = { ...input, password: passwordCrypt };
   }
   if (input?.fecha_egreso) {
+    moment.locale("es");
     input = {
       ...input,
-      fecha_egreso: moment(input.fecha_egreso, "DD/MM/YYYY").format("L"),
+      fecha_egreso: moment(input.fecha_egreso, moment.ISO_8601).isValid()
+        ? moment(input.fecha_egreso, moment.ISO_8601).format("L")
+        : moment(input.fecha_egreso, "YYYY-MM-DD").format("L"),
     };
     console.log(input);
   }
   if (input?.fecha_ingreso) {
+    moment.locale("es");
     input = {
       ...input,
-      fecha_ingreso: moment(input.fecha_ingreso, "DD/MM/YYYY").format("L"),
+      fecha_egreso: moment(input.fecha_ingreso, moment.ISO_8601).isValid()
+        ? moment(input.fecha_ingreso, moment.ISO_8601).format("L")
+        : moment(input.fecha_ingreso, "YYYY-MM-DD").format("L"),
     };
   }
   return input;
