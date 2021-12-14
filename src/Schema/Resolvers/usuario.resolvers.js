@@ -11,7 +11,7 @@ const mapearInput = async (input) => {
     input = { ...input, password: passwordCrypt };
   }
   if (input?.fecha_egreso) {
-    moment.locale("es");
+    moment.locale("en");
     input = {
       ...input,
       fecha_egreso: moment(input.fecha_egreso, moment.ISO_8601).isValid()
@@ -21,10 +21,10 @@ const mapearInput = async (input) => {
     console.log(input);
   }
   if (input?.fecha_ingreso) {
-    moment.locale("es");
+    moment.locale("en");
     input = {
       ...input,
-      fecha_egreso: moment(input.fecha_ingreso, moment.ISO_8601).isValid()
+      fecha_ingreso: moment(input.fecha_ingreso, moment.ISO_8601).isValid()
         ? moment(input.fecha_ingreso, moment.ISO_8601).format("L")
         : moment(input.fecha_ingreso, "YYYY-MM-DD").format("L"),
     };
