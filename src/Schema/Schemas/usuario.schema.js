@@ -53,7 +53,7 @@ module.exports.QUERY_USUARIOS = `
 `;
 
 module.exports.MUTATIONS_USUARIOS = `
-    crearUsuario(input: UsuarioInput): Usuario
+    crearUsuario(input: UsuarioInput, id_usuario: ID ): Usuario
     actualizarUsuarioPorID(_id: ID!, id_usuario: ID, input: UsuarioAInput): Usuario
     actualizarUsuarioPorIdentificacion(identificacion: Int!, input: UsuarioAInput) : Usuario
     actualizarUsuarioPorEmail(email: String!, input: UsuarioAInput) : Usuario

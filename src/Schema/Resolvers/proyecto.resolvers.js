@@ -48,8 +48,8 @@ module.exports.resolversProyecto = {
   },
 
   proyecto_ID: async (args, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    // const { usuarioVerificado } = context;
+    // if (!usuarioVerificado) throw new Error("Prohibido");
     const _id = args._id;
     return await Proyecto.findById(_id);
   },
@@ -75,8 +75,8 @@ module.exports.resolversProyecto = {
   },
   // pendiente filtrar los proyectos solo del lider
   proyecto_id_usuario: async (args, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    // const { usuarioVerificado } = context;
+    // if (!usuarioVerificado) throw new Error("Prohibido");
     const usuario_id = args.id_usuario;
     let datos = await Proyecto.find({ id_usuario: usuario_id })
       .lean()
@@ -90,23 +90,9 @@ module.exports.resolversProyecto = {
     let d = JSON.stringify(c[0].tipo_usuario);
     let lider = d.replace(/['"]+/g, "");
 
-    if (lider == "lider") {
+    if (lider == "lider" || lider == "estudiante") {
       return datos;
     } else {
-    }
-  },
-
-  updateProyecto: async ({ _id, input }, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
-    const _proyecto = { ...input };
-    const proyectoId = await Proyecto.findById({ _id });
-    console.log(proyectoId.estado);
-    const datos = await Proyecto.findByIdAndUpdate({ _id }, _proyecto);
-    if (proyectoId.estado == "activo") {
-      return datos;
-    } else {
-      return;
     }
   },
 
@@ -124,6 +110,60 @@ module.exports.resolversProyecto = {
       })
     );
     return await _proyecto.save();
+  },
+
+  updateProyecto: async ({ _id, input }, context) => {
+    // const { usuarioVerificado } = context;
+    // if (!usuarioVerificado) throw new Error("Prohibido");
+    const _proyecto = { ...input };
+    const proyectoId = await Proyecto.findById({ _id });
+    console.log(proyectoId.estado);
+    const datos = await Proyecto.findByIdAndUpdate({ _id }, _proyecto);
+    if (proyectoId.estado == "activo") {
+      return datos;
+    } else {
+      return;
+    }
+  },
+
+  actualizarfase_proyecto: async ({ _id, input }, context) => {
+    // const { usuarioVerificado } = context;
+    // if (!usuarioVerificado) throw new Error("Prohibido");
+    let fase_proyecto = input.fase_proyecto;
+    let fecha_actual = moment().format("MM-DD-YYYY");
+    const _proyecto1 = await { ...input };
+    console.log(fase_proyecto);
+    if (fase_proyecto == "terminado") {
+      const _proyecto = await {
+        ...input,
+        estado: "inactivo",
+        fecha_terminacion: fecha_actual,
+      };
+      return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto);
+    }
+    return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto1);
+  },
+  actualizarproyecto_estado: async ({ _id, input }, context) => {
+    // const { usuarioVerificado } = context;
+    // if (!usuarioVerificado) throw new Error("Prohibido");
+    let fecha_actual = moment().format("MM-DD-YYYY");
+    const _proyecto = await { ...input, fecha_terminacion: fecha_actual };
+    const _proyecto1 = await {
+      ...input,
+      fase_proyecto: "iniciado",
+      fecha_inicio: fecha_actual,
+    };
+    console.log(_proyecto1);
+    let estado = input.estado;
+    if (estado == "inactivo") {
+      let respuesta1 = await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto);
+      let respuesta2 = await Inscripcion.updateMany(
+        { id_proyecto: _id },
+        { fecha_egreso: fecha_actual }
+      );
+    } else {
+      return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto1);
+    }
   },
 
   crearObjetivoEspecifico: async ({ _id, input }, context) => {
@@ -177,18 +217,6 @@ module.exports.resolversProyecto = {
     }
   },
 
-  actualizarface_proyecto: async ({ _id, input }, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
-    let fase_proyecto = input.face_proyecto;
-    const _proyecto1 = await { ...input };
-    console.log(fase_proyecto);
-    if (fase_proyecto == "terminado") {
-      const _proyecto = await { ...input, estado: "inactivo" };
-      return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto);
-    }
-    return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto1);
-  },
   actualizar_fecha_terminacion: async ({ fecha, input }, context) => {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
