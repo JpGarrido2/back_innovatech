@@ -50,7 +50,7 @@ module.exports.resolversUsuario = {
   //usuarios: async (args, context) => {
   usuarios: async (args, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    if (usuarioVerificado) throw new Error("Prohibido");
     const usuario = await Usuario.findById(args.id_usuario);
     if (usuario && usuario.tipo_usuario === "administrador") {
       return await Usuario.find();
@@ -62,14 +62,14 @@ module.exports.resolversUsuario = {
   },
   usuarioPorID: async (args, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    if (usuarioVerificado) throw new Error("Prohibido");
     const _id = args._id;
 
     return await Usuario.findById(_id);
   },
   usuarioPorNombre: async (args, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    if (usuarioVerificado) throw new Error("Prohibido");
     const _nombre_completo = args.nombre_completo;
     return await Usuario.findOne({ nombre_completo: _nombre_completo });
   },
@@ -153,13 +153,13 @@ module.exports.resolversUsuario = {
   },
   crearUsuario: async ({ input }, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    if (usuarioVerificado) throw new Error("Prohibido");
     const _usuario = new Usuario(await mapearInput({ ...input }));
     return await _usuario.save();
   },
   actualizarUsuarioPorID: async ({ _id, id_usuario, input }, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    if (usuarioVerificado) throw new Error("Prohibido");
     if ("estado" in input) {
       if (id_usuario) {
         const usuario = await Usuario.findById({ _id: id_usuario });
@@ -200,7 +200,7 @@ module.exports.resolversUsuario = {
   },
   eliminarUsuarioPorID: async ({ _id }, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    if (usuarioVerificado) throw new Error("Prohibido");
     return await Usuario.findByIdAndDelete({ _id });
   },
   eliminarUsuarioPorIdentificacion: async ({ identificacion }, context) => {
