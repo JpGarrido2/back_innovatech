@@ -33,8 +33,8 @@ module.exports.resolversInscripcion = {
  */
 
   crearInscripcion: async ({ input }, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    //const { usuarioVerificado } = context;
+    //if (!usuarioVerificado) throw new Error("Prohibido");
     const idu = input.id_usuario;
     const idp = input.id_proyecto;
     const _ins = await Inscripcion.findOne({
@@ -68,9 +68,15 @@ module.exports.resolversInscripcion = {
     //let insLider = inscripciones.filter(inscripciones => inscripciones.id_proyecto === _id);
   },
   listarInscripciones: async (_, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
-    return await Inscripcion.find();
+    //const { usuarioVerificado } = context;
+    //if (!usuarioVerificado) throw new Error("Prohibido");
+
+    let datos = await Inscripcion.find().populate({
+      path: "id_proyecto",
+      select: "_id nombre_proyecto estado",
+    });
+    return datos;
+    //return await Inscripcion.find();
   },
   inscripcionPorID: async (args, context) => {
     const { usuarioVerificado } = context;
