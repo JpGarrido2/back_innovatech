@@ -172,7 +172,7 @@ module.exports.resolversUsuario = {
               usuario.tipo_usuario === "líder")
           ) {
             if (existe_usuario(input.email)) {
-              return {};
+              return { ...input, _id: "" };
             }
             const _usuario = new Usuario(await mapearInput({ ...input }));
             return await _usuario.save();
@@ -186,7 +186,7 @@ module.exports.resolversUsuario = {
         }
       } else {
         if (existe_usuario(input.email)) {
-          return {};
+          return { ...input, _id: "" };
         }
         const _usuario = new Usuario(await mapearInput({ ...input }));
         return await _usuario.save();
