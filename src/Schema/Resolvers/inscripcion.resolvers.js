@@ -33,8 +33,8 @@ module.exports.resolversInscripcion = {
  */
 
   crearInscripcion: async ({ input }, context) => {
-    //const { usuarioVerificado } = context;
-    //if (!usuarioVerificado) throw new Error("Prohibido");
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const idu = input.id_usuario;
     const idp = input.id_proyecto;
     const _ins = await Inscripcion.findOne({
@@ -68,8 +68,8 @@ module.exports.resolversInscripcion = {
     //let insLider = inscripciones.filter(inscripciones => inscripciones.id_proyecto === _id);
   },
   inscripcionesTodoPorIDLider: async (args, context) => {
-    //const { usuarioVerificado } = context;
-    //if (!usuarioVerificado) throw new Error("Prohibido");
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const idL = args._idL;
       const inscripciones = await Inscripcion.find({ id_lider: idL }).populate({
         path: "id_proyecto",
@@ -80,8 +80,8 @@ module.exports.resolversInscripcion = {
    
   },
   listarInscripciones: async (_, context) => {
-    //const { usuarioVerificado } = context;
-    //if (!usuarioVerificado) throw new Error("Prohibido");
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
 
     let datos = await Inscripcion.find().populate({
       path: "id_proyecto",
@@ -158,8 +158,8 @@ module.exports.resolversInscripcion = {
   },
   actualizarEstadoInscripcionPorID: async ({ _id, estado }, context) => {
     //return await Inscripcion.findByIdAndDelete({ estado });
-    //const { usuarioVerificado } = context;
-    //if (!usuarioVerificado) throw new Error("Prohibido");
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     if (estado == "Aceptada") {
       let now = moment().format("L");
       return await Inscripcion.findByIdAndUpdate(
