@@ -148,14 +148,14 @@ module.exports.resolversUsuario = {
     return false;
   },
   crearUsuario: async ({ input, id_usuario }, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
     try {
       if (
         "estado" in input &&
         (input["estado"] === "autorizado" ||
           input["estado"] === "no autorizado")
       ) {
+        const { usuarioVerificado } = context;
+        if (!usuarioVerificado) throw new Error("Prohibido");
         if (id_usuario) {
           const usuario = await Usuario.findById({ _id: id_usuario });
           if (
