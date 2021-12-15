@@ -32,15 +32,12 @@ module.exports.resolversAvance = {
       id_proyecto: idp,
       id_usuario: idu,
     });
-    console.log(_ins.estado);
 
-    if (_ins.estado === "Aceptada") {
       //falta comprobar si el proyecto esta activo
-      const _avance = new Avance(await mapearInput({ ...input }));
+      const _avance = new Avance(await mapearInput({ ...input, fecha_avances:fecha_actual  }));
       return await _avance.save();
-    } else {
-      throw new Error("No puede agregar un avance a este proyecto");
-    }
+    
+    
   },
 
   listarAvances: async (_, context) => {
@@ -81,17 +78,16 @@ module.exports.resolversAvance = {
   listarAvancesPorTipo_usuario: async (args, context) => {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
-    const usuariolider = args.tipo_usuario;
-    const _id = args.id_proyecto;
-    const _estado = args.estado;
-    if (usuariolider === "lider" && _estado === "activo") {
+    const _id = args.id_usuario;
+     {
       return await Avance.find({
-        id_proyecto: _id,
-        tipo_usuario: usuariolider,
-        estado: _estado,
+        id_usuario: _id,
+        
+      }).lean().populate({
+        path: "id_proyecto",
+        select: "_id nombre_proyecto objetivo_general",
       });
-    } else {
-      throw new Error("Prohibido. No tiene suficientes permisos.");
+    
     }
   },
   //Historia de usuario 21

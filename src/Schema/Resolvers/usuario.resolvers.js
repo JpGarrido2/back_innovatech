@@ -35,27 +35,33 @@ const mapearInput = async (input) => {
 module.exports.resolversUsuario = {
   //usuarios: async (args, context) => {
   usuarios: async (args, context) => {
-    const { usuarioVerificado } = context;
-    if (usuarioVerificado) throw new Error("Prohibido");
-    const usuario = await Usuario.findById(args.id_usuario);
-    if (usuario && usuario.tipo_usuario === "administrador") {
-      return await Usuario.find();
-    } else if (usuario && usuario.tipo_usuario === "líder") {
-      return await Usuario.find({ tipo_usuario: "estudiante" });
-    } else {
-      throw new Error("Prohibido. No tiene suficientes permisos.");
+    try {
+      const { usuarioVerificado } = context;
+      if (!usuarioVerificado) throw new Error("Prohibido");
+      const usuario = await Usuario.findById(args.id_usuario);
+      if (usuario && usuario.tipo_usuario === "administrador") {
+        console.log(Usuario.find());
+        return await Usuario.find();
+      } else if (usuario && usuario.tipo_usuario === "líder") {
+        console.log(Usuario.find({ tipo_usuario: "estudiante" }));
+        return await Usuario.find({ tipo_usuario: "estudiante" });
+      } else {
+        throw new Error("Prohibido. No tiene suficientes permisos.");
+      }
+    } catch (error) {
+      console.log(error);
     }
   },
   usuarioPorID: async (args, context) => {
     const { usuarioVerificado } = context;
-    if (usuarioVerificado) throw new Error("Prohibido");
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _id = args._id;
 
     return await Usuario.findById(_id);
   },
   usuarioPorNombre: async (args, context) => {
     const { usuarioVerificado } = context;
-    if (usuarioVerificado) throw new Error("Prohibido");
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _nombre_completo = args.nombre_completo;
     return await Usuario.findOne({ nombre_completo: _nombre_completo });
   },
@@ -139,7 +145,7 @@ module.exports.resolversUsuario = {
   },
   crearUsuario: async ({ input, id_usuario }, context) => {
     const { usuarioVerificado } = context;
-    if (usuarioVerificado) throw new Error("Prohibido");
+    if (!usuarioVerificado) throw new Error("Prohibido");
     try {
       if (
         "estado" in input &&
@@ -173,7 +179,7 @@ module.exports.resolversUsuario = {
   },
   actualizarUsuarioPorID: async ({ _id, id_usuario, input }, context) => {
     const { usuarioVerificado } = context;
-    if (usuarioVerificado) throw new Error("Prohibido");
+    if (!usuarioVerificado) throw new Error("Prohibido");
     if ("estado" in input) {
       if (id_usuario) {
         const usuario = await Usuario.findById({ _id: id_usuario });
@@ -214,7 +220,7 @@ module.exports.resolversUsuario = {
   },
   eliminarUsuarioPorID: async ({ _id }, context) => {
     const { usuarioVerificado } = context;
-    if (usuarioVerificado) throw new Error("Prohibido");
+    if (!usuarioVerificado) throw new Error("Prohibido");
     return await Usuario.findByIdAndDelete({ _id });
   },
   eliminarUsuarioPorIdentificacion: async ({ identificacion }, context) => {
