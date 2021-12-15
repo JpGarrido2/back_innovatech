@@ -32,7 +32,7 @@ const mapearInput = async (input) => {
   return input;
 };
 
-const existe_usuario = (email) => {
+const existe_usuario = async (email) => {
   const usuario = await Usuario.find({ email });
   if (usuario) {
     return true;
