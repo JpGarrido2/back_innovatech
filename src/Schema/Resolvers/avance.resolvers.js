@@ -14,10 +14,10 @@ const mapearInput = async (input) => {
 };
 module.exports.resolversAvance = {
   crearAvance: async ({ input }, context) => {
-    
+    let fecha_actual =moment().format("MM-DD-YYYY")
     const { usuarioVerificado } = context;
      if (!usuarioVerificado) throw new Error("Prohibido");
-    const _avance = new Avance(await mapearInput({ ...input }));
+    const _avance = new Avance(await mapearInput({ ...input, fecha_avances:fecha_actual  }));
     console.log(_avance);
     return await _avance.save();
   },
@@ -26,21 +26,19 @@ module.exports.resolversAvance = {
 //Historia de usuario 22
   crearAvancePorId_Proyecto: async ({ input }) => { 
 //>>>>>>> Stashed changes
+    let fecha_actual =moment().format("MM-DD-YYYY") 
     const idu = input.id_usuario;
     const idp = input.id_proyecto;
     const _ins = await Inscripcion.findOne({
       id_proyecto: idp,
       id_usuario: idu,
     });
-    console.log(_ins.estado);
 
-    if (_ins.estado === "Aceptada") {
       //falta comprobar si el proyecto esta activo
-      const _avance = new Avance(await mapearInput({ ...input }));
+      const _avance = new Avance(await mapearInput({ ...input, fecha_avances:fecha_actual  }));
       return await _avance.save();
-    } else {
-      throw new Error("No puede agregar un avance a este proyecto");
-    }
+    
+    
   },
 
   listarAvances: async (_, context) => {
@@ -81,17 +79,16 @@ module.exports.resolversAvance = {
   listarAvancesPorTipo_usuario: async (args, context) => {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
-    const usuariolider = args.tipo_usuario;
-    const _id = args.id_proyecto;
-    const _estado = args.estado;
-    if (usuariolider === "lider" && _estado === "activo") {
+    const _id = args.id_usuario;
+     {
       return await Avance.find({
-        id_proyecto: _id,
-        tipo_usuario: usuariolider,
-        estado: _estado,
+        id_usuario: _id,
+        
+      }).lean().populate({
+        path: "id_proyecto",
+        select: "_id nombre_proyecto objetivo_general",
       });
-    } else {
-      throw new Error("Prohibido. No tiene suficientes permisos.");
+    
     }
   },
   //Historia de usuario 21 listar avances como estudiante

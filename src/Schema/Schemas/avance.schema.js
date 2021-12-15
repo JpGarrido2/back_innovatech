@@ -62,7 +62,7 @@ module.exports.QUERY_AVANCES = `
     avancePorID(_id: ID!): Avance
     observacion:[Observacion]
     listarAvances:[Avance]
-    listarAvancesPorTipo_usuario(id_proyecto:ID!, tipo_usuario:String!, estado:String!): [Avance]
+    listarAvancesPorTipo_usuario(id_usuario:ID!): [Avance]
     listarAvancesPorTipo_usuario_Estado(id_proyecto: ID!, estado:String!, tipo_usuario:String!):[Avance]
    
 `;
