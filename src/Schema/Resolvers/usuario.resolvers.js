@@ -32,6 +32,14 @@ const mapearInput = async (input) => {
   return input;
 };
 
+const existe_usuario = (email) => {
+  const usuario = await Usuario.find({ email });
+  if (usuario) {
+    return true;
+  }
+  return false;
+};
+
 module.exports.resolversUsuario = {
   //usuarios: async (args, context) => {
   usuarios: async (args, context) => {
@@ -163,6 +171,9 @@ module.exports.resolversUsuario = {
             (usuario.tipo_usuario === "administrador" ||
               usuario.tipo_usuario === "líder")
           ) {
+            if (existe_usuario(input.email)) {
+              return {};
+            }
             const _usuario = new Usuario(await mapearInput({ ...input }));
             return await _usuario.save();
           } else {
@@ -174,6 +185,9 @@ module.exports.resolversUsuario = {
           );
         }
       } else {
+        if (existe_usuario(input.email)) {
+          return {};
+        }
         const _usuario = new Usuario(await mapearInput({ ...input }));
         return await _usuario.save();
       }
