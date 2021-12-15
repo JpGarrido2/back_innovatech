@@ -40,10 +40,8 @@ module.exports.resolversUsuario = {
       if (!usuarioVerificado) throw new Error("Prohibido");
       const usuario = await Usuario.findById(args.id_usuario);
       if (usuario && usuario.tipo_usuario === "administrador") {
-        console.log(Usuario.find());
         return await Usuario.find();
       } else if (usuario && usuario.tipo_usuario === "líder") {
-        console.log(Usuario.find({ tipo_usuario: "estudiante" }));
         return await Usuario.find({ tipo_usuario: "estudiante" });
       } else {
         throw new Error("Prohibido. No tiene suficientes permisos.");
@@ -55,9 +53,13 @@ module.exports.resolversUsuario = {
   usuarioPorID: async (args, context) => {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
-    const _id = args._id;
-
-    return await Usuario.findById(_id);
+    try {
+      const _id = args._id;
+      console.log(_id);
+      return await Usuario.findById(_id);
+    } catch (error) {
+      console.log(error);
+    }
   },
   usuarioPorNombre: async (args, context) => {
     const { usuarioVerificado } = context;
@@ -134,10 +136,12 @@ module.exports.resolversUsuario = {
         );
         return { token, usuario };
       } else {
-        throw new Error("No autenticado.");
+        //throw new Error("No autenticado.");
+        return {};
       }
-    } else {
-      throw new Error("No autorizado.");
+    } else if (usuario) {
+      //throw new Error("No autorizado.");
+      return { token: "no autorizado", usuario };
     }
   },
   logout: async () => {
