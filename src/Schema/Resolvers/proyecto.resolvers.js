@@ -31,8 +31,8 @@ const mapearArgs = (args) => {
 
 module.exports.resolversProyecto = {
   proyectos: async (_, context) => {
-    //  const { usuarioVerificado } = context;
-    //  if (!usuarioVerificado) throw new Error("Prohibido");
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     let datos = await Proyecto.find().populate({
       path: "id_usuario",
       select: "_id nombre_completo tipo_usuario email",
@@ -48,8 +48,8 @@ module.exports.resolversProyecto = {
   },
 
   proyecto_ID: async (args, context) => {
-    // const { usuarioVerificado } = context;
-    // if (!usuarioVerificado) throw new Error("Prohibido");
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _id = args._id;
     return await Proyecto.findById(_id);
   },
@@ -75,8 +75,8 @@ module.exports.resolversProyecto = {
   },
   // pendiente filtrar los proyectos solo del lider
   proyecto_id_usuario: async (args, context) => {
-    // const { usuarioVerificado } = context;
-    // if (!usuarioVerificado) throw new Error("Prohibido");
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const usuario_id = args.id_usuario;
     let datos = await Proyecto.find({ id_usuario: usuario_id })
       .lean()
@@ -89,16 +89,16 @@ module.exports.resolversProyecto = {
     let c = b;
     let d = JSON.stringify(c[0].tipo_usuario);
     let lider = d.replace(/['"]+/g, "");
-
-    if (lider == "lider" || lider == "estudiante") {
+    console.log(lider);
+    if (lider == "líder" || lider == "estudiante") {
       return datos;
     } else {
     }
   },
 
   crearProyecto: async ({ input }, context) => {
-    // const { usuarioVerificado } = context;
-    // if (!usuarioVerificado) throw new Error("Prohibido");
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
 
     const _proyecto = new Proyecto(
       await mapearInput({
@@ -113,8 +113,8 @@ module.exports.resolversProyecto = {
   },
 
   updateProyecto: async ({ _id, input }, context) => {
-    // const { usuarioVerificado } = context;
-    // if (!usuarioVerificado) throw new Error("Prohibido");
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _proyecto = { ...input };
     const proyectoId = await Proyecto.findById({ _id });
     console.log(proyectoId.estado);
@@ -127,8 +127,8 @@ module.exports.resolversProyecto = {
   },
 
   actualizarfase_proyecto: async ({ _id, input }, context) => {
-    // const { usuarioVerificado } = context;
-    // if (!usuarioVerificado) throw new Error("Prohibido");
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     let fase_proyecto = input.fase_proyecto;
     let fecha_actual = moment().format("MM-DD-YYYY");
     const _proyecto1 = await { ...input };
@@ -144,8 +144,8 @@ module.exports.resolversProyecto = {
     return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto1);
   },
   actualizarproyecto_estado: async ({ _id, input }, context) => {
-    // const { usuarioVerificado } = context;
-    // if (!usuarioVerificado) throw new Error("Prohibido");
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     let fecha_actual = moment().format("MM-DD-YYYY");
     const _proyecto = await { ...input, fecha_terminacion: fecha_actual };
     const _proyecto1 = await {
@@ -199,8 +199,8 @@ module.exports.resolversProyecto = {
     return await Proyecto.findOneAndUpdate({ doc_identificacion }, _proyecto);
   },
   actualizarproyecto_estado: async ({ _id, input }, context) => {
-    // const { usuarioVerificado } = context;
-    // if (!usuarioVerificado) throw new Error("Prohibido");
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
     let fecha_actual = moment().format("MM-DD-YYYY");
     const _proyecto = await { ...input, fecha_terminacion: fecha_actual };
     const _proyecto1 = await { ...input };
