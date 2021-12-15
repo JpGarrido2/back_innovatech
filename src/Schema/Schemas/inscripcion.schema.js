@@ -1,25 +1,32 @@
 module.exports.DEFINICION_INSCRIPCIONES = `
     type Inscripcion {
         _id: ID!
-        id_proyecto: ID!
+        id_proyecto: InscripcionProyecto
         id_usuario: ID!
+        id_lider: ID!
         estado: String!
         fecha_ingreso: Date
         fecha_egreso: Date
     }
-
+    type InscripcionProyecto{
+        _id: ID!
+        nombre_proyecto: String
+        estado: String
+    }
     
     
 
     input InscripcionInput {
         id_proyecto: ID!
         id_usuario: ID!
+        id_lider: ID!
 
     }
 `;
 
 module.exports.QUERY_INSCRIPCIONES = `
-    inscripcionesPorIDLider(_idL: ID!, _idP: ID!): [Inscripcion]
+    inscripcionesPorIDLideryProyecto(_idL: ID!, _idP: ID!): [Inscripcion]
+    inscripcionesTodoPorIDLider (_idL: ID!): [Inscripcion]
     listarInscripciones: [Inscripcion]
     inscripcionPorID(_id: ID!): Inscripcion
     inscripcionesPorIDProyecto: [Inscripcion]

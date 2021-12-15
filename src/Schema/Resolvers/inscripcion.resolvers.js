@@ -8,8 +8,8 @@ moment.locale("en");
 const mapearInput = async (input) => {
   input.id_proyecto = mongoose.Types.ObjectId(input.id_proyecto);
   input.id_usuario = mongoose.Types.ObjectId(input.id_usuario);
-  //input.fecha_egreso= "01/01/2000";
-  //input.fecha_ingreso= "01/01/2000";
+  input.id_lider = mongoose.Types.ObjectId(input.id_lider);
+ 
   input.estado = "Pendiente";
   return input;
 };
@@ -50,7 +50,7 @@ module.exports.resolversInscripcion = {
       //return null;
     }
   },
-  inscripcionesPorIDLider: async (args, context) => {
+  inscripcionesPorIDLideryProyecto: async (args, context) => {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
     const idL = args._idL;
@@ -67,10 +67,28 @@ module.exports.resolversInscripcion = {
     }
     //let insLider = inscripciones.filter(inscripciones => inscripciones.id_proyecto === _id);
   },
+  inscripcionesTodoPorIDLider: async (args, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
+    const idL = args._idL;
+      const inscripciones = await Inscripcion.find({ id_lider: idL }).populate({
+        path: "id_proyecto",
+        select: "_id nombre_proyecto estado ",
+      });
+      
+      return inscripciones;
+   
+  },
   listarInscripciones: async (_, context) => {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
-    return await Inscripcion.find();
+
+    let datos = await Inscripcion.find().populate({
+      path: "id_proyecto",
+      select: "_id nombre_proyecto estado ",
+    });
+    return datos;
+    //return await Inscripcion.find();
   },
   inscripcionPorID: async (args, context) => {
     const { usuarioVerificado } = context;

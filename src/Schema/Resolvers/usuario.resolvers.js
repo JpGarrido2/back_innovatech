@@ -3,36 +3,33 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.TOKEN_SECRET;
 const moment = require("moment");
-moment.locale("en");
 
 const mapearInput = async (input) => {
-  try {
-    if (input?.password) {
-      const salt = await bcrypt.genSalt(10);
-      const passwordCrypt = await bcrypt.hash(input.password, salt);
-      input = { ...input, password: passwordCrypt };
-    }
-    if (input?.fecha_egreso) {
-      input = {
-        ...input,
-        fecha_egreso: moment(input.fecha_egreso, moment.ISO_8601).isValid()
-          ? moment(input.fecha_egreso, moment.ISO_8601).format("L")
-          : moment(input.fecha_egreso, "YYYY-MM-DD").format("L"),
-      };
-    }
-    if (input?.fecha_ingreso) {
-      input = {
-        ...input,
-        fecha_ingreso: moment(input.fecha_ingreso, moment.ISO_8601).isValid()
-          ? moment(input.fecha_ingreso, moment.ISO_8601).format("L")
-          : moment(input.fecha_ingreso, "YYYY-MM-DD").format("L"),
-      };
-    }
-    console.log(input);
-    return input;
-  } catch (error) {
-    console.log(error);
+  if (input?.password) {
+    const salt = await bcrypt.genSalt(10);
+    const passwordCrypt = await bcrypt.hash(input.password, salt);
+    input = { ...input, password: passwordCrypt };
   }
+  if (input?.fecha_egreso) {
+    moment.locale("en");
+    input = {
+      ...input,
+      fecha_egreso: moment(input.fecha_egreso, moment.ISO_8601).isValid()
+        ? moment(input.fecha_egreso, moment.ISO_8601).format("L")
+        : moment(input.fecha_egreso, "YYYY-MM-DD").format("L"),
+    };
+  }
+  if (input?.fecha_ingreso) {
+    moment.locale("en");
+    input = {
+      ...input,
+      fecha_ingreso: moment(input.fecha_ingreso, moment.ISO_8601).isValid()
+        ? moment(input.fecha_ingreso, moment.ISO_8601).format("L")
+        : moment(input.fecha_ingreso, "YYYY-MM-DD").format("L"),
+    };
+  }
+  console.log(input);
+  return input;
 };
 
 module.exports.resolversUsuario = {
@@ -51,14 +48,14 @@ module.exports.resolversUsuario = {
   },
   usuarioPorID: async (args, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    if (usuarioVerificado) throw new Error("Prohibido");
     const _id = args._id;
 
     return await Usuario.findById(_id);
   },
   usuarioPorNombre: async (args, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    if (usuarioVerificado) throw new Error("Prohibido");
     const _nombre_completo = args.nombre_completo;
     return await Usuario.findOne({ nombre_completo: _nombre_completo });
   },
@@ -140,22 +137,15 @@ module.exports.resolversUsuario = {
   logout: async () => {
     return false;
   },
-  crearUsuario: async ({ input }, context) => {
+  crearUsuario: async ({ input, id_usuario }, context) => {
+    const { usuarioVerificado } = context;
+    if (usuarioVerificado) throw new Error("Prohibido");
     try {
-      const { usuarioVerificado } = context;
-      if (usuarioVerificado) throw new Error("Prohibido");
-      const _usuario = new Usuario(await mapearInput({ ...input }));
-      console.log(_usuario);
-      return await _usuario.save();
-    } catch (error) {
-      console.log(error);
-    }
-  },
-  actualizarUsuarioPorID: async ({ _id, id_usuario, input }, context) => {
-    try {
-      const { usuarioVerificado } = context;
-      if (usuarioVerificado) throw new Error("Prohibido");
-      if ("estado" in input) {
+      if (
+        "estado" in input &&
+        (input["estado"] === "autorizado" ||
+          input["estado"] === "no autorizado")
+      ) {
         if (id_usuario) {
           const usuario = await Usuario.findById({ _id: id_usuario });
           if (
@@ -163,8 +153,8 @@ module.exports.resolversUsuario = {
             (usuario.tipo_usuario === "administrador" ||
               usuario.tipo_usuario === "líder")
           ) {
-            const _usuario = await mapearInput({ ...input });
-            return await Usuario.findByIdAndUpdate({ _id }, _usuario);
+            const _usuario = new Usuario(await mapearInput({ ...input }));
+            return await _usuario.save();
           } else {
             throw new Error("Prohibido. No tiene suficientes permisos.");
           }
@@ -174,11 +164,37 @@ module.exports.resolversUsuario = {
           );
         }
       } else {
-        const _usuario = await mapearInput({ ...input });
-        return await Usuario.findByIdAndUpdate({ _id }, _usuario);
+        const _usuario = new Usuario(await mapearInput({ ...input }));
+        return await _usuario.save();
       }
     } catch (error) {
       console.log(error);
+    }
+  },
+  actualizarUsuarioPorID: async ({ _id, id_usuario, input }, context) => {
+    const { usuarioVerificado } = context;
+    if (usuarioVerificado) throw new Error("Prohibido");
+    if ("estado" in input) {
+      if (id_usuario) {
+        const usuario = await Usuario.findById({ _id: id_usuario });
+        if (
+          usuario &&
+          (usuario.tipo_usuario === "administrador" ||
+            usuario.tipo_usuario === "líder")
+        ) {
+          const _usuario = await mapearInput({ ...input });
+          return await Usuario.findByIdAndUpdate({ _id }, _usuario);
+        } else {
+          throw new Error("Prohibido. No tiene suficientes permisos.");
+        }
+      } else {
+        throw new Error(
+          "Prohibido. No tiene suficientes permisos para modificar el estado."
+        );
+      }
+    } else {
+      const _usuario = await mapearInput({ ...input });
+      return await Usuario.findByIdAndUpdate({ _id }, _usuario);
     }
   },
   actualizarUsuarioPorIdentificacion: async (
@@ -198,7 +214,7 @@ module.exports.resolversUsuario = {
   },
   eliminarUsuarioPorID: async ({ _id }, context) => {
     const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    if (usuarioVerificado) throw new Error("Prohibido");
     return await Usuario.findByIdAndDelete({ _id });
   },
   eliminarUsuarioPorIdentificacion: async ({ identificacion }, context) => {
