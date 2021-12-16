@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
-const Autor = mongoose.model("Usuario");
 
-const LoginSchema = new Schema({
+const { Schema } = mongoose;
+
+const ProyectoSchema = new Schema({
   nombre_proyecto: { type: String, required: true },
   presupuesto: { type: Number, required: true },
   estado: { type: String, required: false },
@@ -13,4 +13,4 @@ const LoginSchema = new Schema({
   objetivo_especifico: { type: String, required: true },
   id_usuario: [{ type: mongoose.Types.ObjectId, required: true, ref: "Usuario" }],
 });
-module.exports = mongoose.model("Login", LoginSchema, "login");
+module.exports = mongoose.model("Proyecto", ProyectoSchema, "proyecto");
