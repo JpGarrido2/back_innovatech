@@ -34,7 +34,8 @@ const mapearInput = async (input) => {
 
 const existe_usuario = async (email) => {
   const usuario = await Usuario.find({ email });
-  if (usuario) {
+  console.log(usuario?.length);
+  if (usuario?.length > 0) {
     return true;
   }
   return false;
@@ -171,7 +172,8 @@ module.exports.resolversUsuario = {
             (usuario.tipo_usuario === "administrador" ||
               usuario.tipo_usuario === "líder")
           ) {
-            if (existe_usuario(input.email)) {
+            const existe = await existe_usuario(input.email);
+            if (existe) {
               return { ...input, _id: "" };
             }
             const _usuario = new Usuario(await mapearInput({ ...input }));
@@ -185,9 +187,11 @@ module.exports.resolversUsuario = {
           );
         }
       } else {
-        if (existe_usuario(input.email)) {
+        const existe = await existe_usuario(input.email);
+        if (existe) {
           return { ...input, _id: "" };
         }
+        console.log(input);
         const _usuario = new Usuario(await mapearInput({ ...input }));
         return await _usuario.save();
       }
