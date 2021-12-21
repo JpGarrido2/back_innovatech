@@ -2,7 +2,7 @@ module.exports.DEFINICION_INSCRIPCIONES = `
     type Inscripcion {
         _id: ID!
         id_proyecto: InscripcionProyecto
-        id_usuario: ID!
+        id_usuario: InscripcionUsuario
         id_lider: ID!
         estado: String!
         fecha_ingreso: Date
@@ -12,6 +12,11 @@ module.exports.DEFINICION_INSCRIPCIONES = `
         _id: ID!
         nombre_proyecto: String
         estado: String
+    }
+    type InscripcionUsuario{
+        _id: ID!
+        nombre_completo: String
+        
     }
     
     
