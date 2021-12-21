@@ -71,17 +71,16 @@ module.exports.resolversInscripcion = {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
     const idL = args._idL;
-      const inscripciones = await Inscripcion.find({ id_lider: idL }).populate({
-        path: "id_proyecto",
-        select: "_id nombre_proyecto estado ",
-      });
+      const inscripciones = await Inscripcion.find({ id_lider: idL }).
+      populate({path: 'id_proyecto', select: 'nombre_proyecto'}).
+      populate({path: 'id_usuario', select: 'nombre_completo'});
       
       return inscripciones;
    
   },
   listarInscripciones: async (_, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    // const { usuarioVerificado } = context;
+    // if (!usuarioVerificado) throw new Error("Prohibido");
 
     let datos = await Inscripcion.find().populate({
       path: "id_proyecto",
@@ -107,7 +106,10 @@ module.exports.resolversInscripcion = {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
     const id = args._id;
-    let datos = await Inscripcion.find({ id_usuario: id });
+    let datos = await Inscripcion.find({ id_usuario: id }).populate({
+      path: "id_proyecto",
+      select: "_id nombre_proyecto estado ",
+    });
     let resul = { datos: [...datos] };
     console.log(resul.datos);
     return datos;
