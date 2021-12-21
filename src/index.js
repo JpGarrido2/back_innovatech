@@ -58,7 +58,8 @@ app.use(
 // app.use("/api/proyecto", proyecto);
 // app.use("/api/avance", avance);
 //>>>>>>> main
-
+// Static Files
+app.use(express.static(path.join(__dirname, "public/inicio")));
 app.listen(app.get("port"), () => {
   console.log(`server on port ${app.get("port")} `);
 });

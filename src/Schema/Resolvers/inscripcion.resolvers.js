@@ -9,7 +9,7 @@ const mapearInput = async (input) => {
   input.id_proyecto = mongoose.Types.ObjectId(input.id_proyecto);
   input.id_usuario = mongoose.Types.ObjectId(input.id_usuario);
   input.id_lider = mongoose.Types.ObjectId(input.id_lider);
- 
+
   input.estado = "Pendiente";
   return input;
 };
@@ -71,12 +71,11 @@ module.exports.resolversInscripcion = {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
     const idL = args._idL;
-      const inscripciones = await Inscripcion.find({ id_lider: idL }).
-      populate({path: 'id_proyecto', select: 'nombre_proyecto'}).
-      populate({path: 'id_usuario', select: 'nombre_completo'});
-      
-      return inscripciones;
-   
+    const inscripciones = await Inscripcion.find({ id_lider: idL })
+      .populate({ path: "id_proyecto", select: "nombre_proyecto" })
+      .populate({ path: "id_usuario", select: "nombre_completo" });
+
+    return inscripciones;
   },
   listarInscripciones: async (_, context) => {
     // const { usuarioVerificado } = context;
