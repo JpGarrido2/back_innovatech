@@ -143,35 +143,34 @@ module.exports.resolversProyecto = {
     }
     return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto1);
   },
-  // actualizarproyecto_estado: async ({ _id, input }, context) => {
-  //   // const { usuarioVerificado } = context;
-  //   // if (!usuarioVerificado) throw new Error("Prohibido");
-  //   let fecha_actual = moment().format("MM-DD-YYYY");
-  //   const _proyecto = await { ...input, fecha_terminacion: fecha_actual };
-  //   const _proyecto1 = await {
-  //     ...input,
-  //     fase_proyecto: "iniciado",
-  //     fecha_inicio: fecha_actual,
-  //   };
-  //   console.group("datos update estado");
-  //   console.log(_proyecto1);
-  //   console.groupEnd();
-  //   let estado = input.estado;
-  //   if (estado === "inactivo") {
-  //     console.log("entro 1 if");
-  //     let respuesta1 = await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto);
-  //     let respuesta2 = await Inscripcion.updateMany(
-  //       { id_proyecto: _id },
-  //       { fecha_egreso: fecha_actual }
-  //     );
-  //   } else if (estado != "inactivo") {
-  //     console.log("entro 2 if");
-  //     let respuesta3 = await Proyecto.findOneAndUpdate(
-  //       { _id: _id },
-  //       _proyecto1
-  //     );
-  //   }
-  // },
+  actualizarproyecto_estado: async ({ _id, input }, context) => {
+    const { usuarioVerificado } = context;
+    if (!usuarioVerificado) throw new Error("Prohibido");
+    let fecha_actual = moment().format("MM-DD-YYYY");
+    const _proyecto = await { ...input, fecha_terminacion: fecha_actual };
+    const _proyecto1 = await {
+      ...input,
+      fase_proyecto: "iniciado",
+      fecha_inicio: fecha_actual,
+    };
+    console.group("datos update estado");
+    console.log(_proyecto1);
+    console.groupEnd();
+    let estado = input.estado;
+    if (estado === "inactivo") {
+      console.log("entro 1 if");
+      let respuesta1 = await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto);
+      let respuesta2 = await Inscripcion.updateMany(
+        { id_proyecto: _id },
+        { fecha_egreso: fecha_actual }
+      );
+    } else {
+      let respuesta3 = await Proyecto.findOneAndUpdate(
+        { _id: _id },
+        _proyecto1
+      );
+    }
+  },
 
   crearObjetivoEspecifico: async ({ _id, input }, context) => {
     const { usuarioVerificado } = context;
