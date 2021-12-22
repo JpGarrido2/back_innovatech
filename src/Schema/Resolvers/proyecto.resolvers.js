@@ -198,24 +198,24 @@ module.exports.resolversProyecto = {
     const _proyecto = await { ...input };
     return await Proyecto.findOneAndUpdate({ doc_identificacion }, _proyecto);
   },
-  actualizarproyecto_estado: async ({ _id, input }, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
-    let fecha_actual = moment().format("MM-DD-YYYY");
-    const _proyecto = await { ...input, fecha_terminacion: fecha_actual };
-    const _proyecto1 = await { ...input };
+  // actualizarproyecto_estado: async ({ _id, input }, context) => {
+  //   const { usuarioVerificado } = context;
+  //   if (!usuarioVerificado) throw new Error("Prohibido");
+  //   let fecha_actual = moment().format("MM-DD-YYYY");
+  //   const _proyecto = await { ...input, fecha_terminacion: fecha_actual };
+  //   const _proyecto1 = await { ...input };
 
-    let estado = input.estado;
-    if (estado == "inactivo") {
-      let respuesta1 = await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto);
-      let respuesta2 = await Inscripcion.updateMany(
-        { id_proyecto: _id },
-        { fecha_egreso: fecha_actual }
-      );
-    } else {
-      return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto1);
-    }
-  },
+  //   let estado = input.estado;
+  //   if (estado == "inactivo") {
+  //     let respuesta1 = await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto);
+  //     let respuesta2 = await Inscripcion.updateMany(
+  //       { id_proyecto: _id },
+  //       { fecha_egreso: fecha_actual }
+  //     );
+  //   } else {
+  //     return await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto1);
+  //   }
+  // },
 
   actualizar_fecha_terminacion: async ({ fecha, input }, context) => {
     const { usuarioVerificado } = context;
