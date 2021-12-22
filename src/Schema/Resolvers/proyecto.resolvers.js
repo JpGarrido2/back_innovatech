@@ -153,12 +153,9 @@ module.exports.resolversProyecto = {
       fase_proyecto: "iniciado",
       fecha_inicio: fecha_actual,
     };
-    console.group("datos update estado");
     console.log(_proyecto1);
-    console.groupEnd();
     let estado = input.estado;
-    if (estado === "inactivo") {
-      console.log("entro 1 if");
+    if (estado == "inactivo") {
       let respuesta1 = await Proyecto.findOneAndUpdate({ _id: _id }, _proyecto);
       let respuesta2 = await Inscripcion.updateMany(
         { id_proyecto: _id },
@@ -171,7 +168,6 @@ module.exports.resolversProyecto = {
       );
     }
   },
-
   crearObjetivoEspecifico: async ({ _id, input }, context) => {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
