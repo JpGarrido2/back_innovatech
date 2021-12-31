@@ -32,30 +32,47 @@ const mapearInput = async (input) => {
   return input;
 };
 
+const existe_usuario = async (email) => {
+  const usuario = await Usuario.find({ email });
+  console.log(usuario?.length);
+  if (usuario?.length > 0) {
+    return true;
+  }
+  return false;
+};
+
 module.exports.resolversUsuario = {
   //usuarios: async (args, context) => {
   usuarios: async (args, context) => {
-    const { usuarioVerificado } = context;
-    if (usuarioVerificado) throw new Error("Prohibido");
-    const usuario = await Usuario.findById(args.id_usuario);
-    if (usuario && usuario.tipo_usuario === "administrador") {
-      return await Usuario.find();
-    } else if (usuario && usuario.tipo_usuario === "líder") {
-      return await Usuario.find({ tipo_usuario: "estudiante" });
-    } else {
-      throw new Error("Prohibido. No tiene suficientes permisos.");
+    try {
+      const { usuarioVerificado } = context;
+      if (!usuarioVerificado) throw new Error("Prohibido");
+      const usuario = await Usuario.findById(args.id_usuario);
+      if (usuario && usuario.tipo_usuario === "administrador") {
+        return await Usuario.find();
+      } else if (usuario && usuario.tipo_usuario === "líder") {
+        return await Usuario.find({ tipo_usuario: "estudiante" });
+      } else {
+        throw new Error("Prohibido. No tiene suficientes permisos.");
+      }
+    } catch (error) {
+      console.log(error);
     }
   },
   usuarioPorID: async (args, context) => {
     const { usuarioVerificado } = context;
-    if (usuarioVerificado) throw new Error("Prohibido");
-    const _id = args._id;
-
-    return await Usuario.findById(_id);
+    if (!usuarioVerificado) throw new Error("Prohibido");
+    try {
+      const _id = args._id;
+      console.log(_id);
+      return await Usuario.findById(_id);
+    } catch (error) {
+      console.log(error);
+    }
   },
   usuarioPorNombre: async (args, context) => {
     const { usuarioVerificado } = context;
-    if (usuarioVerificado) throw new Error("Prohibido");
+    if (!usuarioVerificado) throw new Error("Prohibido");
     const _nombre_completo = args.nombre_completo;
     return await Usuario.findOne({ nombre_completo: _nombre_completo });
   },
@@ -128,24 +145,26 @@ module.exports.resolversUsuario = {
         );
         return { token, usuario };
       } else {
-        throw new Error("No autenticado.");
+        //throw new Error("No autenticado.");
+        return {};
       }
-    } else {
-      throw new Error("No autorizado.");
+    } else if (usuario) {
+      //throw new Error("No autorizado.");
+      return { token: "no autorizado", usuario };
     }
   },
   logout: async () => {
     return false;
   },
   crearUsuario: async ({ input, id_usuario }, context) => {
-    const { usuarioVerificado } = context;
-    if (usuarioVerificado) throw new Error("Prohibido");
     try {
       if (
         "estado" in input &&
         (input["estado"] === "autorizado" ||
           input["estado"] === "no autorizado")
       ) {
+        const { usuarioVerificado } = context;
+        if (!usuarioVerificado) throw new Error("Prohibido");
         if (id_usuario) {
           const usuario = await Usuario.findById({ _id: id_usuario });
           if (
@@ -153,6 +172,10 @@ module.exports.resolversUsuario = {
             (usuario.tipo_usuario === "administrador" ||
               usuario.tipo_usuario === "líder")
           ) {
+            const existe = await existe_usuario(input.email);
+            if (existe) {
+              return { ...input, _id: "" };
+            }
             const _usuario = new Usuario(await mapearInput({ ...input }));
             return await _usuario.save();
           } else {
@@ -164,6 +187,11 @@ module.exports.resolversUsuario = {
           );
         }
       } else {
+        const existe = await existe_usuario(input.email);
+        if (existe) {
+          return { ...input, _id: "" };
+        }
+        console.log(input);
         const _usuario = new Usuario(await mapearInput({ ...input }));
         return await _usuario.save();
       }
@@ -173,7 +201,7 @@ module.exports.resolversUsuario = {
   },
   actualizarUsuarioPorID: async ({ _id, id_usuario, input }, context) => {
     const { usuarioVerificado } = context;
-    if (usuarioVerificado) throw new Error("Prohibido");
+    if (!usuarioVerificado) throw new Error("Prohibido");
     if ("estado" in input) {
       if (id_usuario) {
         const usuario = await Usuario.findById({ _id: id_usuario });
@@ -214,7 +242,7 @@ module.exports.resolversUsuario = {
   },
   eliminarUsuarioPorID: async ({ _id }, context) => {
     const { usuarioVerificado } = context;
-    if (usuarioVerificado) throw new Error("Prohibido");
+    if (!usuarioVerificado) throw new Error("Prohibido");
     return await Usuario.findByIdAndDelete({ _id });
   },
   eliminarUsuarioPorIdentificacion: async ({ identificacion }, context) => {

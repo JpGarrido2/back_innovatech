@@ -15,7 +15,6 @@ const mapearInput = async (input) => {
 };
 module.exports.resolversAvance = {
   crearAvance: async ({ input }, context) => {
-    
     // const { usuarioVerificado } = context;
     // if (!usuarioVerificado) throw new Error("Prohibido");
     const _avance = new Avance(await mapearInput({ ...input }));
@@ -24,20 +23,20 @@ module.exports.resolversAvance = {
   },
 
   crearAvancePorId_Proyecto: async ({ input }, context) => {
-    const { usuarioVerificado } = context;
-    if (!usuarioVerificado) throw new Error("Prohibido");
+    // const { usuarioVerificado } = context;
+    // if (!usuarioVerificado) throw new Error("Prohibido");
     const idu = input.id_usuario;
     const idp = input.id_proyecto;
     const _ins = await Inscripcion.findOne({
       id_proyecto: idp,
       id_usuario: idu,
     });
-
-      //falta comprobar si el proyecto esta activo
-      const _avance = new Avance(await mapearInput({ ...input, fecha_avances:fecha_actual  }));
-      return await _avance.save();
-    
-    
+    let fecha_actual = moment().format("MM-DD-YYYY");
+    //falta comprobar si el proyecto esta activo
+    const _avance = new Avance(
+      await mapearInput({ ...input, fecha_avances: fecha_actual })
+    );
+    return await _avance.save();
   },
 
   listarAvances: async (_, context) => {
@@ -79,15 +78,15 @@ module.exports.resolversAvance = {
     const { usuarioVerificado } = context;
     if (!usuarioVerificado) throw new Error("Prohibido");
     const _id = args.id_usuario;
-     {
+    {
       return await Avance.find({
         id_usuario: _id,
-        
-      }).lean().populate({
-        path: "id_proyecto",
-        select: "_id nombre_proyecto objetivo_general",
-      });
-    
+      })
+        .lean()
+        .populate({
+          path: "id_proyecto",
+          select: "_id nombre_proyecto objetivo_general",
+        });
     }
   },
   //Historia de usuario 21
